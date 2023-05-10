@@ -1,0 +1,25 @@
+{
+  "name": "byteshard/form",
+  "description": "Form components for the byteshard framework",
+  "minimum-stability": "stable",
+  "license": "MPL-2.0",
+  "authors": [
+    {
+      "name": "Lars Hennig"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "byteShard\\": "src/byteShard"
+    }
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^1.9"
+  },
+  "require": {
+    "php": "^8.1",
+    "byteshard/contracts": "^v1.0.1",
+    "byteshard/core": "^1.0",
+    "ext-simplexml": "*"
+  }
+}
