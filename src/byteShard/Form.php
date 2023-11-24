@@ -16,6 +16,7 @@ use byteShard\Internal\Form\CollectionInterface;
 use byteShard\Internal\Form\FormObject;
 use byteShard\Internal\Form\FormObject\Proxy;
 use byteShard\Internal\Form\Nested;
+use byteShard\Internal\Form\ValueInterface;
 use byteShard\Internal\SimpleXML;
 use Closure;
 use SimpleXMLElement;
@@ -298,6 +299,10 @@ abstract class Form extends CellContent implements FormInterface
             $localeToken       = $this->cell->createLocaleBaseToken('Cell').'.Form.';
             $defaultInputWidth = $this->formSettings?->getInputWidth();
             foreach ($this->formObjects as $formObject) {
+                $formObjectId = $formObject->getFormObjectId();
+                if (is_object($this->data_binding) && property_exists($this->data_binding, $formObjectId) && ($formObject instanceof ValueInterface) && $formObject->getValue() === null) {
+                    $formObject->setValue($this->data_binding->{$formObjectId});
+                }
                 if ($formObject->getName() === '') {
                     do {
                         $randomName = substr(md5(random_bytes(64)), 0, 6);
