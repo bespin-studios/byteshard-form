@@ -298,6 +298,10 @@ abstract class Form extends CellContent implements FormInterface
             $localeToken       = $this->cell->createLocaleBaseToken('Cell').'.Form.';
             $defaultInputWidth = $this->formSettings?->getInputWidth();
             foreach ($this->formObjects as $formObject) {
+                $formObjectId = $formObject->getId();
+                if (is_object($this->data_binding) && property_exists($this->data_binding, $formObjectId) && in_array(\byteShard\Internal\Form\Value::class, class_uses($formObject), true) && $formObject->getValue() === null) {
+                    $formObject->setValue($this->data_binding->{$formObjectId});
+                }
                 if ($formObject->getName() === '') {
                     do {
                         $randomName = substr(md5(random_bytes(64)), 0, 6);
