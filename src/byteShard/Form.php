@@ -19,6 +19,7 @@ use byteShard\Internal\Form\Nested;
 use byteShard\Internal\Form\ValueInterface;
 use byteShard\Internal\SimpleXML;
 use Closure;
+use Random\RandomException;
 use SimpleXMLElement;
 
 /**
@@ -142,7 +143,7 @@ abstract class Form extends CellContent implements FormInterface
      * @throws Exception
      * @deprecated
      */
-    private function queryData()
+    private function queryData(): void
     {
         if ($this->query !== '') {
             trigger_error('Setting Values using setQuery is deprecated. Use defineDataBinding instead.', E_USER_DEPRECATED);
@@ -155,7 +156,6 @@ abstract class Form extends CellContent implements FormInterface
      * @return array
      * @throws Exception
      * @throws \Exception
-     * @internal
      * @internal
      */
     public function getCellContent(array $content = []): array
@@ -282,7 +282,7 @@ abstract class Form extends CellContent implements FormInterface
      * store client request time
      * only needed for cells with write access
      */
-    private function setRequestTimestamp()
+    private function setRequestTimestamp(): void
     {
         $this->cell->setRequestTimestamp();
     }
@@ -290,9 +290,9 @@ abstract class Form extends CellContent implements FormInterface
     /**
      * @session read (Cell::getName, Cell::getID)
      * @session write (Form::evaluateFormObject)
-     * @throws Exception
+     * @throws Exception|RandomException
      */
-    private function evaluate(string $nonce)
+    private function evaluate(string $nonce): void
     {
         if (!empty($this->formObjects)) {
             $randomIdArray     = [];
@@ -350,7 +350,7 @@ abstract class Form extends CellContent implements FormInterface
      * alternatively a closure can be set on each form object
      * @param Proxy $formObject
      */
-    private function bindData(Proxy $formObject)
+    private function bindData(Proxy $formObject): void
     {
         if ($formObject->binding === null) {
             return;
@@ -405,7 +405,7 @@ abstract class Form extends CellContent implements FormInterface
      * @param Proxy $formObject
      * @throws Exception
      */
-    private function evaluateFormObject(Internal\Form\FormObject\Proxy $formObject)
+    private function evaluateFormObject(Internal\Form\FormObject\Proxy $formObject): void
     {
         //events and validation only for objects with write access
         //change name for all objects with write access
@@ -532,7 +532,7 @@ abstract class Form extends CellContent implements FormInterface
      * @session write (Cell::registerContentEvent)
      * @throws Exception
      */
-    private function evaluateContentEvents()
+    private function evaluateContentEvents(): void
     {
         foreach ($this->getEvents() as $event) {
             // only one poll action per cell is currently allowed
@@ -587,7 +587,11 @@ abstract class Form extends CellContent implements FormInterface
                     } elseif (array_key_exists('tagify', $control_parameters)) {
                         $parameters['afterDataLoading']['tagify'][$control_name] = $control_parameters['tagify'];
                     } else {
-                        $parameters['afterDataLoading']['nested'][$control_name] = $control_parameters;
+                        if (array_key_exists('base64', $control_parameters)) {
+                            $parameters['afterDataLoading']['base64'][] = $control_name;
+                        } else {
+                            $parameters['afterDataLoading']['nested'][$control_name] = $control_parameters;
+                        }
                     }
                 }
             }
