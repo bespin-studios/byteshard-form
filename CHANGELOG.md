@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/byteshard/form/compare/v1.1.0...v1.2.0) (2024-02-14)
+
+
+### Features
+
+* option to base64 encode client data ([47de99a](https://github.com/byteshard/form/commit/47de99a711f3165305304e04e02c7271a10ddde0))
+
 # [1.1.0](https://github.com/byteshard/form/compare/v1.0.0...v1.1.0) (2023-11-24)
 
 
