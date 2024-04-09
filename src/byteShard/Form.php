@@ -19,7 +19,6 @@ use byteShard\Internal\Form\Nested;
 use byteShard\Internal\Form\ValueInterface;
 use byteShard\Internal\SimpleXML;
 use Closure;
-use Random\RandomException;
 use SimpleXMLElement;
 
 /**
@@ -290,7 +289,7 @@ abstract class Form extends CellContent implements FormInterface
     /**
      * @session read (Cell::getName, Cell::getID)
      * @session write (Form::evaluateFormObject)
-     * @throws Exception|RandomException
+     * @throws Exception
      */
     private function evaluate(string $nonce): void
     {
@@ -371,7 +370,7 @@ abstract class Form extends CellContent implements FormInterface
 
     /**
      * returns an array with all defined form controls
-     * @return array
+     * @return FormObject[]
      * @API
      */
     public function getFormObjects(): array
