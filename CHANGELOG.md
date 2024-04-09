@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/byteshard/form/compare/v1.2.0...v1.2.1) (2024-04-09)
+
+
+### Bug Fixes
+
+* remove catching specific exception to increase backwards compatibility ([05b798c](https://github.com/byteshard/form/commit/05b798c11b9b8b02033c0681ef72f574ffea7659))
+
 # [1.2.0](https://github.com/byteshard/form/compare/v1.1.0...v1.2.0) (2024-02-14)
 
 
