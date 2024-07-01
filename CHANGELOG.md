@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/byteshard/form/compare/v1.2.1...v1.2.2) (2024-07-01)
+
+
+### Bug Fixes
+
+* check if data_binding is initialized before trying to access it ([e3b8d23](https://github.com/byteshard/form/commit/e3b8d23127ef5e1bdb29c16e86a4df710878b14e))
+
 ## [1.2.1](https://github.com/byteshard/form/compare/v1.2.0...v1.2.1) (2024-04-09)
 
 
