@@ -299,7 +299,7 @@ abstract class Form extends CellContent implements FormInterface
             $defaultInputWidth = $this->formSettings?->getInputWidth();
             foreach ($this->formObjects as $formObject) {
                 $formObjectId = $formObject->getFormObjectId();
-                if (is_object($this->data_binding) && property_exists($this->data_binding, $formObjectId) && ($formObject instanceof ValueInterface) && $formObject->getValue() === null) {
+                if (isset($this->data_binding) && is_object($this->data_binding) && property_exists($this->data_binding, $formObjectId) && ($formObject instanceof ValueInterface) && $formObject->getValue() === null) {
                     $formObject->setValue($this->data_binding->{$formObjectId});
                 }
                 if ($formObject->getName() === '') {
