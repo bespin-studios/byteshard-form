@@ -1,3 +1,13 @@
+# [2.0.0](https://github.com/byteshard/form/compare/v1.2.2...v2.0.0) (2024-07-08)
+
+
+* Merge pull request #5 from byteshard/lhennig_coreupgrade ([2673637](https://github.com/byteshard/form/commit/26736374834b84dc2a9cf1b9447dcf07a6169378)), closes [#5](https://github.com/byteshard/form/issues/5)
+
+
+### BREAKING CHANGES
+
+* upgrade core to breaking change version (only ext-mb…
+
 ## [1.2.2](https://github.com/byteshard/form/compare/v1.2.1...v1.2.2) (2024-07-01)
 
 
