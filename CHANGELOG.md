@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/byteshard/form/compare/v2.0.0...v2.1.0) (2024-07-11)
+
+
+### Features
+
+* new way to select combo options ([9cd5970](https://github.com/byteshard/form/commit/9cd5970dc5794f8be06af6dc6006be9d938a46d9))
+
 # [2.0.0](https://github.com/byteshard/form/compare/v1.2.2...v2.0.0) (2024-07-08)
 
 
