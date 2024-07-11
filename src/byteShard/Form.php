@@ -74,10 +74,11 @@ abstract class Form extends CellContent implements FormInterface
     /**
      * @var bool override dhtmlx controls: set placeholder attribute
      */
-    private bool   $has_placeholders = false;
-    private string $alignContent     = '';
-    private string $className        = '';
-    private array  $objectProperties = [];
+    private bool   $has_placeholders     = false;
+    private string $alignContent         = '';
+    private string $className            = '';
+    private array  $objectProperties     = [];
+    private array  $selectedComboOptions = [];
 
     /**
      * Form constructor.
@@ -412,28 +413,28 @@ abstract class Form extends CellContent implements FormInterface
 
 
         $alterations = $formObject->register($this->cell);
-        foreach ($alterations['ObjectProperties'] as $objectProperties) {
+        foreach ($alterations->getProperties() as $objectProperties) {
             $this->objectProperties[] = $objectProperties;
         }
-        foreach ($alterations['Events'] as $eventName) {
+        foreach ($alterations->getEvents() as $eventName) {
             if ($eventName === 'event_on_input_change') {
-                $this->inputChangeObjects[] = $alterations['Name'];
+                $this->inputChangeObjects[] = $alterations->getName();
             }
             $this->{$eventName} = true;
         }
         if ($formObject->getComboAllowsNewEntries() === true) {
-            $this->combosWithNewEntries[] = $alterations['Name'];
+            $this->combosWithNewEntries[] = $alterations->getName();
         }
-        if ($alterations['HelpObject'] !== '') {
-            $this->inputHelpObjects[] = $alterations['HelpObject'];
+        if ($alterations->getHelpObject() !== '') {
+            $this->inputHelpObjects[] = $alterations->getHelpObject();
         }
-        if (!empty($alterations['ClientExecution'])) {
-            $this->clientEvents = array_merge_recursive($alterations['ClientExecution']);
+        if (!empty($alterations->getArrayOfMethodsWhichWillBeExecutedOnTheClient())) {
+            $this->clientEvents = array_merge_recursive($alterations->getArrayOfMethodsWhichWillBeExecutedOnTheClient());
         }
-        if (!empty($alterations['Parameters'])) {
-            $this->formObjectParameters[$alterations['Name']] = $alterations['Parameters'];
+        if (!empty($alterations->getParameters())) {
+            $this->formObjectParameters[$alterations->getName()] = $alterations->getParameters();
         }
-        if ($alterations['SetOptions'] === true) {
+        if ($alterations->isSetOptions() === true) {
             $data = property_exists($formObject, 'data') ? $formObject->data : null;
             if (method_exists($this, 'defineComboOptions')) {
                 $formObject->setOptions($this->defineComboOptions($formObject->internalName, $data));
@@ -441,6 +442,9 @@ abstract class Form extends CellContent implements FormInterface
                 trigger_error('Method defineComboContent is deprecated. Use defineComboOptions instead', E_USER_DEPRECATED);
                 $formObject->setOptions($this->defineComboContent($formObject->internalName, $data));
             }
+        }
+        if ($alterations->getSelectedClientOption() !== null) {
+            $this->selectedComboOptions[$alterations->getName()] = $alterations->getSelectedClientOption();
         }
 
         $this->bindData($formObject);
@@ -601,14 +605,20 @@ abstract class Form extends CellContent implements FormInterface
         if ($this->className !== '') {
             $parameters['className'] = $this->className;
         }
-        $parameters['rt']  = date('YmdHis', time());
-        $parameters['cn']  = base64_encode($nonce);
-        $parameters['nce'] = $this->combosWithNewEntries;
+        $parameters['rt']  = date('YmdHis', time()); // request time
+        $parameters['cn']  = base64_encode($nonce); // cell nonce
+        $parameters['nce'] = $this->combosWithNewEntries; // ids of combos which allow new entries
+        $parameters['sco'] = $this->getSelectedComboOptions(); // array of combo objects and their selected option
         $parameters['op']  = self::getObjectProperties($this->objectProperties);
         if (!empty($this->inputChangeObjects)) {
             $parameters['ev']['onInputChange'] = $this->inputChangeObjects;
         }
         return $parameters;
+    }
+
+    private function getSelectedComboOptions(): array
+    {
+        return $this->selectedComboOptions;
     }
 
     public static function getObjectProperties(array $properties): string

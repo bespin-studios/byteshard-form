@@ -56,6 +56,10 @@ abstract class ModifyFormObject extends Action implements ClientExecutionInterfa
         return $this->clientModification;
     }
 
+    /**
+     * @param ID $containerId
+     * @return array<string> form object ids
+     */
     public function getClientExecutionItems(ID $containerId): array
     {
         // because cell nonce of a target cell might change because of asynchronous load order or reloading of a target cell, we can only have client execution on the same cell
