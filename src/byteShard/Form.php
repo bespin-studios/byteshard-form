@@ -60,6 +60,7 @@ abstract class Form extends CellContent implements FormInterface
     private bool  $event_on_blur                  = false;
     private bool  $eventOnUnrestrictedButtonClick = false;
     private bool  $has_dependency_validation      = false;
+    private bool  $use_single_file_mode           = false;
     private array $clientEvents                   = [];
     private array $inputChangeObjects             = [];
     private array $combosWithNewEntries           = [];
@@ -79,6 +80,7 @@ abstract class Form extends CellContent implements FormInterface
     private string $className            = '';
     private array  $objectProperties     = [];
     private array  $selectedComboOptions = [];
+    private array  $asynchronousControls = [];
 
     /**
      * Form constructor.
@@ -413,6 +415,9 @@ abstract class Form extends CellContent implements FormInterface
 
 
         $alterations = $formObject->register($this->cell);
+        if ($alterations->isAsynchronous() === true) {
+            $this->asynchronousControls[] = $alterations->getName();
+        }
         foreach ($alterations->getProperties() as $objectProperties) {
             $this->objectProperties[] = $objectProperties;
         }
@@ -505,6 +510,12 @@ abstract class Form extends CellContent implements FormInterface
             if ($this->event_on_upload_file === true) {
                 $cellEvents['onUploadFile'][] = 'doOnUploadFile';
                 $cellEvents['onUploadFail'][] = 'doOnUploadFail';
+                if ($this->use_single_file_mode === true) {
+                    $cellEvents['onUploadFile'][]       = 'hideModalSpinner';
+                    $cellEvents['onUploadFail'][]       = 'hideModalSpinner';
+                    $cellEvents['onBeforeFileAdd'][]    = 'limitUploadToSingleFileOnly';
+                    $cellEvents['onBeforeFileUpload'][] = 'showModalSpinner';
+                }
             }
             if ($this->event_on_blur === true) {
                 $cellEvents['onBlur'][] = 'doOnBlur';
@@ -610,6 +621,9 @@ abstract class Form extends CellContent implements FormInterface
         $parameters['nce'] = $this->combosWithNewEntries; // ids of combos which allow new entries
         $parameters['sco'] = $this->getSelectedComboOptions(); // array of combo objects and their selected option
         $parameters['op']  = self::getObjectProperties($this->objectProperties);
+        if (!empty($this->asynchronousControls)) {
+            $parameters['ae'] = $this->asynchronousControls;
+        }
         if (!empty($this->inputChangeObjects)) {
             $parameters['ev']['onInputChange'] = $this->inputChangeObjects;
         }
