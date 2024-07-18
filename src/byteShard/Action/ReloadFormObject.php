@@ -75,12 +75,7 @@ class ReloadFormObject extends Action
                             if ($control instanceof Form\Control\Combo) {
                                 $comboClass = $control->getComboClass();
                                 if ($comboClass !== '') {
-                                    $class = new $comboClass();
-                                    /** @var Combo $class */
-                                    $class->setParameters($control->getComboParameters());
-                                    $comboContent = $class->getComboContents($cell->getContentClass());
-
-                                    $action['LCell'][$cell->containerId()][$cell->cellId()]['setObjectData'][$this->getEncryptedName($cell, $control)] = $comboContent;
+                                    $action['LCell'][$cell->containerId()][$cell->cellId()]['reloadFormObject'][$this->getEncryptedName($cell, $control)] = $control->getUrl($cell);
                                 } else {
                                     $action['LCell'][$cell->containerId()][$cell->cellId()]['setObjectData'][$this->getEncryptedName($cell, $control)] = $this->getComboContent($control);
                                 }

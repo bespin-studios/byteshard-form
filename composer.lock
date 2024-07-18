@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "95e3ae65a480af9008158e68783b5453",
+    "content-hash": "cc2705fc59259e57222e54d120702e14",
     "packages": [
         {
             "name": "byteshard/auth",
@@ -94,16 +94,16 @@
         },
         {
             "name": "byteshard/core",
-            "version": "v2.1.0",
+            "version": "v2.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/byteshard/core.git",
-                "reference": "12ab9a7e07d7f643e57f8ceaf8fa28eeb9232d4b"
+                "reference": "43875815d135ff7b159ae633d6f6cea4ebf53675"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/byteshard/core/zipball/12ab9a7e07d7f643e57f8ceaf8fa28eeb9232d4b",
-                "reference": "12ab9a7e07d7f643e57f8ceaf8fa28eeb9232d4b",
+                "url": "https://api.github.com/repos/byteshard/core/zipball/43875815d135ff7b159ae633d6f6cea4ebf53675",
+                "reference": "43875815d135ff7b159ae633d6f6cea4ebf53675",
                 "shasum": ""
             },
             "require": {
@@ -168,9 +168,9 @@
             "description": "byteShard PHP core",
             "support": {
                 "issues": "https://github.com/byteshard/core/issues",
-                "source": "https://github.com/byteshard/core/tree/v2.1.0"
+                "source": "https://github.com/byteshard/core/tree/v2.2.1"
             },
-            "time": "2024-07-11T11:54:06+00:00"
+            "time": "2024-07-18T08:45:59+00:00"
         },
         {
             "name": "byteshard/debug",
