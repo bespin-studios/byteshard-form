@@ -1,3 +1,11 @@
+# [2.2.0](https://github.com/byteshard/form/compare/v2.1.0...v2.2.0) (2024-07-18)
+
+
+### Features
+
+* reload combo options asynchronously ([ea89a4e](https://github.com/byteshard/form/commit/ea89a4e73f3e8d6a379257d537ed38f612332093))
+* show loader until asynchronous combos have been loaded ([c0198e9](https://github.com/byteshard/form/commit/c0198e91fe9d4a669bd21224c84516e5cf74ad84))
+
 # [2.1.0](https://github.com/byteshard/form/compare/v2.0.0...v2.1.0) (2024-07-11)
 
 
