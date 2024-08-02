@@ -1,3 +1,10 @@
+# [2.3.0](https://github.com/byteshard/form/compare/v2.2.0...v2.3.0) (2024-08-02)
+
+
+### Features
+
+* add ClearUpload action ([3a51d37](https://github.com/byteshard/form/commit/3a51d377b9aa9373cdc608e3b0d5dad855cf1646))
+
 # [2.2.0](https://github.com/byteshard/form/compare/v2.1.0...v2.2.0) (2024-07-18)
 
 
