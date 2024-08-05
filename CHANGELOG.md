@@ -1,3 +1,10 @@
+## [2.3.1](https://github.com/byteshard/form/compare/v2.3.0...v2.3.1) (2024-08-05)
+
+
+### Bug Fixes
+
+* reload form object didn't work for nested elements ([8d81c84](https://github.com/byteshard/form/commit/8d81c848836395e92814fc8507ff8701701d5227))
+
 # [2.3.0](https://github.com/byteshard/form/compare/v2.2.0...v2.3.0) (2024-08-02)
 
 
