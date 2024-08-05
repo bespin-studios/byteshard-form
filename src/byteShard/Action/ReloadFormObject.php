@@ -7,12 +7,12 @@
 namespace byteShard\Action;
 
 use byteShard\Cell;
-use byteShard\Combo;
 use byteShard\Combo\Option;
 use byteShard\Exception;
 use byteShard\Form;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
+use byteShard\Internal\Combo\Combo;
 use byteShard\Internal\Form\FormObject;
 use Closure;
 
@@ -54,55 +54,18 @@ class ReloadFormObject extends Action
             if ($cellContent instanceof Form) {
                 if ($cellContent->hasComboContent() === true) {
                     // deprecated
-                    $cell_form_controls = $cell->getContentControlType();
-                    $client_data        = $this->decryptData($id, $cell_form_controls);
-                    foreach ($this->formItems as $item_to_reload) {
-                        $encrypted_name = $cell->getEncryptedName($item_to_reload);
-                        if ($encrypted_name !== null && array_key_exists($encrypted_name, $cell_form_controls)) {
-                            switch ($cell_form_controls[$encrypted_name]['objectType']) {
-                                case Form\Control\Combo::class:
-                                    $combo = $cellContent->getComboOptions($item_to_reload, $client_data);
-
-                                    $action['LCell'][$cell->containerId()][$cell->cellId()]['setObjectData'][$encrypted_name] = $combo;
-                                    break;
-                            }
+                    $cellFormControls = $cell->getContentControlType();
+                    $clientData       = $this->decryptData($id, $cellFormControls);
+                    foreach ($this->formItems as $itemToReload) {
+                        $encryptedName = $cell->getEncryptedName($itemToReload);
+                        if ($encryptedName !== null && array_key_exists($encryptedName, $cellFormControls) && $cellFormControls[$encryptedName]['objectType'] === Form\Control\Combo::class) {
+                            $action['LCell'][$cell->containerId()][$cell->cellId()]['setObjectData'][$encryptedName] = $cellContent->getComboOptions($itemToReload, $clientData);
                         }
                     }
                 } else {
                     $controls = $cellContent->getFormControls();
                     foreach ($controls as $control) {
-                        if (array_key_exists($control->getName(), $this->formItems)) {
-                            if ($control instanceof Form\Control\Combo) {
-                                $comboClass = $control->getComboClass();
-                                if ($comboClass !== '') {
-                                    $action['LCell'][$cell->containerId()][$cell->cellId()]['reloadFormObject'][$this->getEncryptedName($cell, $control)] = $control->getUrl($cell);
-                                } else {
-                                    $action['LCell'][$cell->containerId()][$cell->cellId()]['setObjectData'][$this->getEncryptedName($cell, $control)] = $this->getComboContent($control);
-                                }
-                            } else {
-                                $action['LCell'][$cell->containerId()][$cell->cellId()]['setObjectData'][$this->getEncryptedName($cell, $control)] = $this->getComboContent($control);
-                            }
-                        } else {
-                            $nested = $control->getNestedItems();
-                            //TODO: recursion
-                            foreach ($nested as $nestedControl) {
-                                if (array_key_exists($nestedControl->getName(), $this->formItems)) {
-                                    if ($nestedControl instanceof Form\Control\Combo) {
-                                        $comboClass = $nestedControl->getComboClass();
-                                        if ($comboClass !== '') {
-                                            $class        = new $comboClass();
-                                            $comboContent = $class->getComboContents($cell->getContentClass());
-
-                                            $action['LCell'][$cell->containerId()][$cell->cellId()]['setObjectData'][$this->getEncryptedName($cell, $nestedControl)] = $comboContent;
-                                        } else {
-                                            $action['LCell'][$cell->containerId()][$cell->cellId()]['setObjectData'][$this->getEncryptedName($cell, $nestedControl)] = $this->getComboContent($nestedControl);
-                                        }
-                                    } else {
-                                        $action['LCell'][$cell->containerId()][$cell->cellId()]['setObjectData'][$this->getEncryptedName($cell, $nestedControl)] = $this->getComboContent($nestedControl);
-                                    }
-                                }
-                            }
-                        }
+                        $this->processControl($control, $cell, $action);
                     }
                 }
             }
@@ -111,7 +74,25 @@ class ReloadFormObject extends Action
         return new Action\ActionResultMigrationHelper($action);
     }
 
-    private function getEncryptedName(Cell $cell, FormObject $control)
+    private function processControl($control, $cell, &$action): void
+    {
+        if (array_key_exists($control->getName(), $this->formItems)) {
+            $encryptedName = $this->getEncryptedName($cell, $control);
+            if ($encryptedName !== null) {
+                if ($control instanceof Form\Control\Combo && $control->getComboClass() !== '') {
+                    $action['LCell'][$cell->containerId()][$cell->cellId()]['reloadFormObject'][$encryptedName] = $control->getUrl($cell);
+                } else {
+                    $action['LCell'][$cell->containerId()][$cell->cellId()]['setObjectData'][$encryptedName] = $this->getComboContent($control);
+                }
+            }
+        }
+        $nested = $control->getNestedItems();
+        foreach ($nested as $nestedControl) {
+            $this->processControl($nestedControl, $cell, $action);
+        }
+    }
+
+    private function getEncryptedName(Cell $cell, FormObject $control): ?string
     {
         return $cell->getEncryptedName($control->getName());
     }
@@ -135,7 +116,7 @@ class ReloadFormObject extends Action
                         }
                     }
                 }
-                $combo = new \byteShard\Internal\Combo\Combo();
+                $combo = new Combo();
                 $combo->setOptions(...$options);
                 return $combo->getXML();
             }
