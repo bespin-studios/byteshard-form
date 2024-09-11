@@ -13,12 +13,14 @@ use byteShard\Internal\CellContent;
 use byteShard\Internal\ClientData\ProcessedClientData;
 use byteShard\Internal\ClientData\ProcessedClientDataInterface;
 use byteShard\Internal\Form\CollectionInterface;
+use byteShard\Internal\Form\DateValueInterface;
 use byteShard\Internal\Form\FormObject;
 use byteShard\Internal\Form\FormObject\Proxy;
 use byteShard\Internal\Form\Nested;
 use byteShard\Internal\Form\ValueInterface;
 use byteShard\Internal\SimpleXML;
 use Closure;
+use DateTime;
 use SimpleXMLElement;
 
 /**
@@ -302,8 +304,16 @@ abstract class Form extends CellContent implements FormInterface
             $defaultInputWidth = $this->formSettings?->getInputWidth();
             foreach ($this->formObjects as $formObject) {
                 $formObjectId = $formObject->getFormObjectId();
-                if (isset($this->data_binding) && is_object($this->data_binding) && property_exists($this->data_binding, $formObjectId) && ($formObject instanceof ValueInterface) && $formObject->getValue() === null) {
-                    $formObject->setValue($this->data_binding->{$formObjectId});
+                if (isset($this->data_binding) && is_object($this->data_binding) && property_exists($this->data_binding, $formObjectId)) {
+                    if ($formObject instanceof ValueInterface) {
+                        if ($formObject->getValue() === null) {
+                            $formObject->setValue($this->data_binding->{$formObjectId});
+                        }
+                    } elseif ($formObject instanceof DateValueInterface) {
+                        if ($formObject->getValue() === '' && is_string($this->data_binding->{$formObjectId}) || $this->data_binding->{$formObjectId} instanceof DateTime) {
+                            $formObject->setValue($this->data_binding->{$formObjectId});
+                        }
+                    }
                 }
                 if ($formObject->getName() === '') {
                     do {
