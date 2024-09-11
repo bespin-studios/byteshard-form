@@ -1,3 +1,10 @@
+## [2.3.2](https://github.com/byteshard/form/compare/v2.3.1...v2.3.2) (2024-09-11)
+
+
+### Bug Fixes
+
+* add data binding to calendar controls ([418afc0](https://github.com/byteshard/form/commit/418afc0eff2c575dbddaa65e4a01e5ab6a6ec1d6))
+
 ## [2.3.1](https://github.com/byteshard/form/compare/v2.3.0...v2.3.1) (2024-08-05)
 
 
