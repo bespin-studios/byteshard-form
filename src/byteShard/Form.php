@@ -189,7 +189,6 @@ abstract class Form extends CellContent implements FormInterface
                 $this->evaluate($nonce);
                 break;
         }
-        $this->cell->setFormDefaultInputWidth($this->formSettings?->getInputWidth());
         $this->evaluateContentEvents();
         session_write_close();
         $format = $this->cell->getContentFormat();
@@ -402,7 +401,6 @@ abstract class Form extends CellContent implements FormInterface
     {
         $this->addFormObject(...$formControls);
         $this->evaluate($this->getNonce());
-        $this->cell->setFormDefaultInputWidth($this->formSettings?->getInputWidth());
         $this->evaluateContentEvents();
         return $this->getJSON();
     }
