@@ -1,3 +1,10 @@
+## [2.3.3](https://github.com/bespin-studios/byteshard-form/compare/v2.3.2...v2.3.3) (2025-02-13)
+
+
+### Bug Fixes
+
+* remove setFormDefaultInputWidth since it's not used anymore ([3fafeb8](https://github.com/bespin-studios/byteshard-form/commit/3fafeb8903aff215585879bbb73541086b42459d))
+
 ## [2.3.2](https://github.com/byteshard/form/compare/v2.3.1...v2.3.2) (2024-09-11)
 
 
