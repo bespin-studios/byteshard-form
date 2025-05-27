@@ -1,3 +1,10 @@
+## [2.3.4](https://github.com/bespin-studios/byteshard-form/compare/v2.3.3...v2.3.4) (2025-05-27)
+
+
+### Bug Fixes
+
+* pipeline ([6d73ecd](https://github.com/bespin-studios/byteshard-form/commit/6d73ecd3fb1fb2797670fb3ca30eb6dfe85eec1c))
+
 ## [2.3.3](https://github.com/bespin-studios/byteshard-form/compare/v2.3.2...v2.3.3) (2025-02-13)
 
 
