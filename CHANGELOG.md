@@ -1,3 +1,10 @@
+## [2.3.5](https://github.com/bespin-studios/byteshard-form/compare/v2.3.4...v2.3.5) (2025-06-11)
+
+
+### Bug Fixes
+
+* use own index for editor controls ([b6cda46](https://github.com/bespin-studios/byteshard-form/commit/b6cda464ecb725dec4ead4fd789a71b6514f0ad9))
+
 ## [2.3.4](https://github.com/bespin-studios/byteshard-form/compare/v2.3.3...v2.3.4) (2025-05-27)
 
 
