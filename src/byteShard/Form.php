@@ -599,22 +599,33 @@ abstract class Form extends CellContent implements FormInterface
         if ($this->has_placeholders === true) {
             $parameters['afterDataLoading']['placeholders'] = true;
         }
-        foreach ($this->formObjectParameters as $control_name => $parameter_array) {
-            foreach ($parameter_array as $location => $control_parameters) {
-                if ($location === 'beforeDataLoading') {
-                    $parameters['beforeDataLoading']['nested'][$control_name] = $control_parameters;
-                } elseif ($location === 'afterDataLoading') {
-                    if (array_key_exists('autoCompletion', $control_parameters)) {
-                        $parameters['afterDataLoading']['autoCompletion'][$control_name] = $control_parameters['autoCompletion'];
-                    } elseif (array_key_exists('tagify', $control_parameters)) {
-                        $parameters['afterDataLoading']['tagify'][$control_name] = $control_parameters['tagify'];
-                    } else {
-                        if (array_key_exists('base64', $control_parameters)) {
-                            $parameters['afterDataLoading']['base64'][] = $control_name;
+        foreach ($this->formObjectParameters as $encryptedControlName => $parameterArray) {
+            foreach ($parameterArray as $location => $controlParameters) {
+                switch ($location) {
+                    case 'beforeDataLoading':
+                        $parameters['beforeDataLoading']['nested'][$encryptedControlName] = $controlParameters;
+                        break;
+                    case 'afterDataLoading':
+                        if (is_array($controlParameters)) {
+                            foreach ($controlParameters as $element => $controlParameter) {
+                                switch ($element) {
+                                    case 'autoCompletion':
+                                    case 'tagify':
+                                    case 'editor':
+                                        $parameters['afterDataLoading'][$element][$encryptedControlName] = $controlParameter;
+                                        break;
+                                    case 'base64':
+                                        $parameters['afterDataLoading']['base64'][] = $encryptedControlName;
+                                        break;
+                                    default:
+                                        $parameters['afterDataLoading']['nested'][$encryptedControlName] = $controlParameters;
+                                        break;
+                                }
+                            }
                         } else {
-                            $parameters['afterDataLoading']['nested'][$control_name] = $control_parameters;
+                            $parameters['afterDataLoading']['nested'][$encryptedControlName] = $controlParameters;
                         }
-                    }
+                        break;
                 }
             }
         }
