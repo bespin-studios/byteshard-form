@@ -203,7 +203,8 @@ abstract class Form extends CellContent implements FormInterface
                     'contentType'       => $this->cellContentType,
                     'contentEvents'     => $this->getCellEvents(),
                     'contentParameters' => $this->getCellParameters($nonce),
-                    'contentFormat'     => $format
+                    'contentFormat'     => $format,
+                    'contentPost'       => $this->getPostParameters()
                 ]
             );
         }
@@ -217,7 +218,8 @@ abstract class Form extends CellContent implements FormInterface
                 'contentType'       => $this->cellContentType,
                 'contentEvents'     => $this->getCellEvents(),
                 'contentParameters' => $this->getCellParameters($nonce),
-                'contentFormat'     => $format
+                'contentFormat'     => $format,
+                'contentPost'       => $this->getPostParameters()
             ]
         );
     }
@@ -590,42 +592,12 @@ abstract class Form extends CellContent implements FormInterface
         if ($this->liveValidation === true && $this->getAccessType() === Enum\AccessType::RW) {
             $parameters['settings']['self']['enableLiveValidation'] = true;
         }
-        if (!empty($this->inputHelpObjects)) {
-            $parameters['afterDataLoading']['help'] = $this->inputHelpObjects;
-        }
-        if ($this->has_dependency_validation === true) {
-            $parameters['afterDataLoading']['validations'] = true;
-        }
-        if ($this->has_placeholders === true) {
-            $parameters['afterDataLoading']['placeholders'] = true;
-        }
+        $parameters['afterDataLoading'] = $this->getPostParameters();
+
         foreach ($this->formObjectParameters as $encryptedControlName => $parameterArray) {
             foreach ($parameterArray as $location => $controlParameters) {
-                switch ($location) {
-                    case 'beforeDataLoading':
-                        $parameters['beforeDataLoading']['nested'][$encryptedControlName] = $controlParameters;
-                        break;
-                    case 'afterDataLoading':
-                        if (is_array($controlParameters)) {
-                            foreach ($controlParameters as $element => $controlParameter) {
-                                switch ($element) {
-                                    case 'autoCompletion':
-                                    case 'tagify':
-                                    case 'editor':
-                                        $parameters['afterDataLoading'][$element][$encryptedControlName] = $controlParameter;
-                                        break;
-                                    case 'base64':
-                                        $parameters['afterDataLoading']['base64'][] = $encryptedControlName;
-                                        break;
-                                    default:
-                                        $parameters['afterDataLoading']['nested'][$encryptedControlName] = $controlParameters;
-                                        break;
-                                }
-                            }
-                        } else {
-                            $parameters['afterDataLoading']['nested'][$encryptedControlName] = $controlParameters;
-                        }
-                        break;
+                if ($location === 'beforeDataLoading') {
+                    $parameters['beforeDataLoading']['nested'][$encryptedControlName] = $controlParameters;
                 }
             }
         }
@@ -647,6 +619,46 @@ abstract class Form extends CellContent implements FormInterface
             $parameters['ev']['onInputChange'] = $this->inputChangeObjects;
         }
         return $parameters;
+    }
+
+    private function getPostParameters(): array
+    {
+        $result = [];
+        if (!empty($this->inputHelpObjects)) {
+            $result['help'] = $this->inputHelpObjects;
+        }
+        if ($this->has_dependency_validation === true) {
+            $result['validations'] = true;
+        }
+        if ($this->has_placeholders === true) {
+            $result['placeholders'] = true;
+        }
+        foreach ($this->formObjectParameters as $encryptedControlName => $parameterArray) {
+            foreach ($parameterArray as $location => $controlParameters) {
+                if ($location === 'afterDataLoading') {
+                    if (is_array($controlParameters)) {
+                        foreach ($controlParameters as $element => $controlParameter) {
+                            switch ($element) {
+                                case 'autoCompletion':
+                                case 'tagify':
+                                case 'editor':
+                                    $result[$element][$encryptedControlName] = $controlParameter;
+                                    break;
+                                case 'base64':
+                                    $result['base64'][] = $encryptedControlName;
+                                    break;
+                                default:
+                                    $result['nested'][$encryptedControlName] = $controlParameters;
+                                    break;
+                            }
+                        }
+                    } else {
+                        $result['nested'][$encryptedControlName] = $controlParameters;
+                    }
+                }
+            }
+        }
+        return $result;
     }
 
     private function getSelectedComboOptions(): array
