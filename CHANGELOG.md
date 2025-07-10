@@ -1,3 +1,11 @@
+## [2.3.6](https://github.com/bespin-studios/byteshard-form/compare/v2.3.5...v2.3.6) (2025-07-10)
+
+
+### Bug Fixes
+
+* use ClientCell for new frontend notation ([b8d93df](https://github.com/bespin-studios/byteshard-form/commit/b8d93dfc7600570ce5f7ab317428fe3665a04105))
+* use ClientCell for new frontend notation ([752807b](https://github.com/bespin-studios/byteshard-form/commit/752807b828e3275ad06a1852ee4cd0c1a5fbaace))
+
 ## [2.3.5](https://github.com/bespin-studios/byteshard-form/compare/v2.3.4...v2.3.5) (2025-06-11)
 
 
