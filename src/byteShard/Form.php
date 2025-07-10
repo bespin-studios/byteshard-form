@@ -23,6 +23,7 @@ use byteShard\Internal\Form\ValueInterface;
 use byteShard\Internal\SimpleXML;
 use byteShard\Internal\Struct\ClientCell;
 use byteShard\Internal\Struct\ClientCellComponent;
+use byteShard\Internal\Struct\ClientCellEvent;
 use byteShard\Internal\Struct\ClientCellProperties;
 use Closure;
 use DateTime;
@@ -52,8 +53,8 @@ abstract class Form extends CellContent implements FormInterface
     /**
      * @var Proxy[]
      */
-    private array  $internalFormObjects = [];
-    private string $poll_id;
+    private array   $internalFormObjects = [];
+    private ?string $pollId              = null;
 
     // Events
     private bool  $event_on_button_click          = false;
@@ -217,7 +218,10 @@ abstract class Form extends CellContent implements FormInterface
                 break;
         }
         return new ClientCell(
-            new ClientCellProperties(cellHeader: $this->getCellHeader()),
+            new ClientCellProperties(
+                nonce     : $nonce,
+                cellHeader: $this->getCellHeader(),
+                pollId    : $this->pollId),
             ...$components,
         );
     }
@@ -505,49 +509,50 @@ abstract class Form extends CellContent implements FormInterface
     private function getCellEvents(): array
     {
         $cellEvents = $this->getParentEventsForClient();
+        $result     = [];
+        foreach ($cellEvents as $eventName => $events) {
+            foreach ($events as $handler) {
+                $result[] = new ClientCellEvent($eventName, $handler);
+            }
+        }
         if ($this->getAccessType() === Enum\AccessType::RW) {
             if ($this->event_on_button_click === true) {
-                $cellEvents['onButtonClick'][] = 'doOnButtonClick';
+                $result[] = new ClientCellEvent('onButtonClick', 'doOnButtonClick');
             }
             if ($this->event_on_change === true) {
-                $cellEvents['onChange'][] = 'doOnChange';
+                $result[] = new ClientCellEvent('onChange', 'doOnChange');
             }
             if ($this->event_on_input_change === true) {
-                $cellEvents['onInputChange'][] = 'doOnInputChange';
+                $result[] = new ClientCellEvent('onInputChange', 'doOnInputChange');
             }
             if ($this->event_on_upload_file === true) {
-                $cellEvents['onUploadFile'][] = 'doOnUploadFile';
-                $cellEvents['onUploadFail'][] = 'doOnUploadFail';
+                $result[] = new ClientCellEvent('onUploadFile', 'doOnUploadFile');
+                $result[] = new ClientCellEvent('onUploadFail', 'doOnUploadFail');
                 if ($this->use_single_file_mode === true) {
-                    $cellEvents['onUploadFile'][]       = 'hideModalSpinner';
-                    $cellEvents['onUploadFail'][]       = 'hideModalSpinner';
-                    $cellEvents['onBeforeFileAdd'][]    = 'limitUploadToSingleFileOnly';
-                    $cellEvents['onBeforeFileUpload'][] = 'showModalSpinner';
+                    $result[] = new ClientCellEvent('onUploadFile', 'hideModalSpinner');
+                    $result[] = new ClientCellEvent('onUploadFail', 'hideModalSpinner');
+                    $result[] = new ClientCellEvent('onBeforeFileAdd', 'limitUploadToSingleFileOnly');
+                    $result[] = new ClientCellEvent('onBeforeFileUpload', 'showModalSpinner');
                 }
             }
             if ($this->event_on_blur === true) {
-                $cellEvents['onBlur'][] = 'doOnBlur';
+                $result[] = new ClientCellEvent('onBlur', 'doOnBlur');
             }
         }
         if ($this->eventOnUnrestrictedButtonClick === true) {
-            if (!(array_key_exists('onButtonClick', $cellEvents) && in_array('doOnButtonClick', $cellEvents['onButtonClick']))) {
-                $cellEvents['onButtonClick'][] = 'doOnButtonClick';
-            }
+            $result[] = new ClientCellEvent('onButtonClick', 'doOnButtonClick');
         }
         if ($this->event_on_info === true) {
-            $cellEvents['onInfo'][] = 'doOnInfo';
+            $result[] = new ClientCellEvent('onInfo', 'doOnInfo');
         }
         if ($this->event_on_close_button_click === true) {
-            $cellEvents['onButtonClick'][] = 'doOnCloseButtonClick';
+            $result[] = new ClientCellEvent('onButtonClick', 'doOnCloseButtonClick');
         }
-        /*if ($this->event_on_poll === true && isset($this->poll_id)) {
-            $cellEvents['onPoll'] = $this->poll_id;
-        }*/
         if ($this->event_on_show_help === true) {
-            $cellEvents['onFocus'][] = 'doShowHelp';
-            $cellEvents['onBlur'][]  = 'doHideHelp';
+            $result[] = new ClientCellEvent('onFocus', 'doShowHelp');
+            $result[] = new ClientCellEvent('onBlur', 'doHideHelp');
         }
-        return $cellEvents;
+        return $result;
     }
 
     /**
@@ -563,7 +568,7 @@ abstract class Form extends CellContent implements FormInterface
                 foreach ($actions as $action) {
                     if ($action instanceof Action\PollMethod) {
                         $this->event_on_poll = true;
-                        $this->poll_id       = $action->getId();
+                        $this->pollId        = $action->getId();
                         break;
                     }
                 }
