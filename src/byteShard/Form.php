@@ -161,8 +161,6 @@ abstract class Form extends CellContent implements FormInterface
     }
 
     /**
-     * @param array $content
-     * @return array
      * @throws Exception
      * @throws \Exception
      * @internal
