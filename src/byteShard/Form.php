@@ -6,6 +6,8 @@
 
 namespace byteShard;
 
+use byteShard\Enum\ContentFormat;
+use byteShard\Enum\ContentType;
 use byteShard\Form\Control;
 use byteShard\Form\FormInterface;
 use byteShard\Form\Settings;
@@ -19,6 +21,9 @@ use byteShard\Internal\Form\FormObject\Proxy;
 use byteShard\Internal\Form\Nested;
 use byteShard\Internal\Form\ValueInterface;
 use byteShard\Internal\SimpleXML;
+use byteShard\Internal\Struct\ClientCell;
+use byteShard\Internal\Struct\ClientCellComponent;
+use byteShard\Internal\Struct\ClientCellProperties;
 use Closure;
 use DateTime;
 use SimpleXMLElement;
@@ -162,9 +167,9 @@ abstract class Form extends CellContent implements FormInterface
      * @throws \Exception
      * @internal
      */
-    public function getCellContent(array $content = []): array
+    public function getCellContent(): ?ClientCell
     {
-        $parent_content = parent::getCellContent($content);
+        $components = parent::getComponents();
         $this->cell->clearContentObjectTypes();
         $nonce = $this->cell->getNonce();
         switch ($this->getAccessType()) {
@@ -191,34 +196,31 @@ abstract class Form extends CellContent implements FormInterface
         }
         $this->evaluateContentEvents();
         session_write_close();
-        $format = $this->cell->getContentFormat();
-        if ($format === 'JSON') {
-            return array_merge(
-                $parent_content,
-                array_filter([
-                    'cellHeader' => $this->getCellHeader()
-                ]),
-                [
-                    'content'           => $this->getJSON(),
-                    'contentType'       => $this->cellContentType,
-                    'contentEvents'     => $this->getCellEvents(),
-                    'contentParameters' => $this->getCellParameters($nonce),
-                    'contentFormat'     => $format
-                ]
-            );
+        switch ($this->cell->getContentFormat()) {
+            case 'JSON':
+                $components[] = new ClientCellComponent(
+                    type   : ContentType::DhtmlxForm,
+                    content: $this->getJSON(),
+                    events : $this->getCellEvents(),
+                    pre    : $this->getPreParameters($nonce),
+                    post   : $this->getPostParameters(),
+                    format : ContentFormat::JSON
+                );
+                break;
+            case 'XML':
+                $components[] = new ClientCellComponent(
+                    type   : ContentType::DhtmlxForm,
+                    content: $this->getXML(),
+                    events : $this->getCellEvents(),
+                    pre    : $this->getPreParameters($nonce),
+                    post   : $this->getPostParameters(),
+                    format : ContentFormat::XML
+                );
+                break;
         }
-        return array_merge(
-            $parent_content,
-            array_filter([
-                'cellHeader' => $this->getCellHeader()
-            ]),
-            [
-                'content'           => $this->getXML(),
-                'contentType'       => $this->cellContentType,
-                'contentEvents'     => $this->getCellEvents(),
-                'contentParameters' => $this->getCellParameters($nonce),
-                'contentFormat'     => $format
-            ]
+        return new ClientCell(
+            new ClientCellProperties(cellHeader: $this->getCellHeader()),
+            ...$components,
         );
     }
 
@@ -572,15 +574,9 @@ abstract class Form extends CellContent implements FormInterface
         }
     }
 
-    /**
-     * @session none
-     * @param string $nonce
-     * @return array
-     */
-    private function getCellParameters(string $nonce): array
+    private function getPreParameters(string $nonce): array
     {
         $parameters = [];
-
         if (!empty($this->clientEvents)) {
             $parameters['client'] = $this->clientEvents;
         }
@@ -590,42 +586,10 @@ abstract class Form extends CellContent implements FormInterface
         if ($this->liveValidation === true && $this->getAccessType() === Enum\AccessType::RW) {
             $parameters['settings']['self']['enableLiveValidation'] = true;
         }
-        if (!empty($this->inputHelpObjects)) {
-            $parameters['afterDataLoading']['help'] = $this->inputHelpObjects;
-        }
-        if ($this->has_dependency_validation === true) {
-            $parameters['afterDataLoading']['validations'] = true;
-        }
-        if ($this->has_placeholders === true) {
-            $parameters['afterDataLoading']['placeholders'] = true;
-        }
         foreach ($this->formObjectParameters as $encryptedControlName => $parameterArray) {
             foreach ($parameterArray as $location => $controlParameters) {
-                switch ($location) {
-                    case 'beforeDataLoading':
-                        $parameters['beforeDataLoading']['nested'][$encryptedControlName] = $controlParameters;
-                        break;
-                    case 'afterDataLoading':
-                        if (is_array($controlParameters)) {
-                            foreach ($controlParameters as $element => $controlParameter) {
-                                switch ($element) {
-                                    case 'autoCompletion':
-                                    case 'tagify':
-                                    case 'editor':
-                                        $parameters['afterDataLoading'][$element][$encryptedControlName] = $controlParameter;
-                                        break;
-                                    case 'base64':
-                                        $parameters['afterDataLoading']['base64'][] = $encryptedControlName;
-                                        break;
-                                    default:
-                                        $parameters['afterDataLoading']['nested'][$encryptedControlName] = $controlParameters;
-                                        break;
-                                }
-                            }
-                        } else {
-                            $parameters['afterDataLoading']['nested'][$encryptedControlName] = $controlParameters;
-                        }
-                        break;
+                if ($location === 'beforeDataLoading') {
+                    $parameters['beforeDataLoading']['nested'][$encryptedControlName] = $controlParameters;
                 }
             }
         }
@@ -645,6 +609,46 @@ abstract class Form extends CellContent implements FormInterface
         }
         if (!empty($this->inputChangeObjects)) {
             $parameters['ev']['onInputChange'] = $this->inputChangeObjects;
+        }
+        return $parameters;
+    }
+
+    private function getPostParameters(): array
+    {
+        $parameters = [];
+        if (!empty($this->inputHelpObjects)) {
+            $parameters['help'] = $this->inputHelpObjects;
+        }
+        if ($this->has_dependency_validation === true) {
+            $parameters['validations'] = true;
+        }
+        if ($this->has_placeholders === true) {
+            $parameters['placeholders'] = true;
+        }
+        foreach ($this->formObjectParameters as $encryptedControlName => $parameterArray) {
+            foreach ($parameterArray as $location => $controlParameters) {
+                if ($location === 'afterDataLoading') {
+                    if (is_array($controlParameters)) {
+                        foreach ($controlParameters as $element => $controlParameter) {
+                            switch ($element) {
+                                case 'autoCompletion':
+                                case 'tagify':
+                                case 'editor':
+                                    $parameters[$element][$encryptedControlName] = $controlParameter;
+                                    break;
+                                case 'base64':
+                                    $parameters['base64'][] = $encryptedControlName;
+                                    break;
+                                default:
+                                    $parameters['nested'][$encryptedControlName] = $controlParameters;
+                                    break;
+                            }
+                        }
+                    } else {
+                        $parameters['nested'][$encryptedControlName] = $controlParameters;
+                    }
+                }
+            }
         }
         return $parameters;
     }
