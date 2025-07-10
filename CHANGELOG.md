@@ -1,3 +1,10 @@
+## [2.3.7](https://github.com/bespin-studios/byteshard-form/compare/v2.3.6...v2.3.7) (2025-07-10)
+
+
+### Bug Fixes
+
+* add nonce and pollId to cell properties ([92efde9](https://github.com/bespin-studios/byteshard-form/commit/92efde9fa8836c7a184fc97f7e355e9049c62b0b))
+
 ## [2.3.6](https://github.com/bespin-studios/byteshard-form/compare/v2.3.5...v2.3.6) (2025-07-10)
 
 
