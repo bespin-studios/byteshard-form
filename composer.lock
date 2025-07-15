@@ -94,16 +94,16 @@
         },
         {
             "name": "byteshard/core",
-            "version": "v2.12.6",
+            "version": "v2.12.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bespin-studios/byteshard-core.git",
-                "reference": "b18def0366618d060638c134ec2036b867dd5019"
+                "reference": "fcf450c3ee56e33e0daea6f23d065bb48b05261e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bespin-studios/byteshard-core/zipball/b18def0366618d060638c134ec2036b867dd5019",
-                "reference": "b18def0366618d060638c134ec2036b867dd5019",
+                "url": "https://api.github.com/repos/bespin-studios/byteshard-core/zipball/fcf450c3ee56e33e0daea6f23d065bb48b05261e",
+                "reference": "fcf450c3ee56e33e0daea6f23d065bb48b05261e",
                 "shasum": ""
             },
             "require": {
@@ -168,9 +168,9 @@
             "description": "byteShard PHP core",
             "support": {
                 "issues": "https://github.com/bespin-studios/byteshard-core/issues",
-                "source": "https://github.com/bespin-studios/byteshard-core/tree/v2.12.6"
+                "source": "https://github.com/bespin-studios/byteshard-core/tree/v2.12.7"
             },
-            "time": "2025-07-12T10:29:45+00:00"
+            "time": "2025-07-15T06:21:40+00:00"
         },
         {
             "name": "byteshard/debug",
