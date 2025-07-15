@@ -1,3 +1,11 @@
+## [2.3.8](https://github.com/bespin-studios/byteshard-form/compare/v2.3.7...v2.3.8) (2025-07-15)
+
+
+### Bug Fixes
+
+* use new contentComponent ([f14cb11](https://github.com/bespin-studios/byteshard-form/commit/f14cb114b1034a54a1fb48dacc76aa681d115e0f))
+* use new contentComponent ([ead21ed](https://github.com/bespin-studios/byteshard-form/commit/ead21ed6d7eb1acc1faa284b0855d185031fcff9))
+
 ## [2.3.7](https://github.com/bespin-studios/byteshard-form/compare/v2.3.6...v2.3.7) (2025-07-10)
 
 
