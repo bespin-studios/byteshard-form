@@ -22,9 +22,9 @@ use byteShard\Internal\Form\Nested;
 use byteShard\Internal\Form\ValueInterface;
 use byteShard\Internal\SimpleXML;
 use byteShard\Internal\Struct\ClientCell;
-use byteShard\Internal\Struct\ClientCellComponent;
 use byteShard\Internal\Struct\ClientCellEvent;
 use byteShard\Internal\Struct\ClientCellProperties;
+use byteShard\Internal\Struct\ContentComponent;
 use Closure;
 use DateTime;
 use SimpleXMLElement;
@@ -197,31 +197,33 @@ abstract class Form extends CellContent implements FormInterface
         session_write_close();
         switch ($this->cell->getContentFormat()) {
             case 'JSON':
-                $components[] = new ClientCellComponent(
+                $components[] = new ContentComponent(
                     type   : ContentType::DhtmlxForm,
                     content: $this->getJSON(),
                     events : $this->getCellEvents(),
-                    pre    : $this->getPreParameters($nonce),
-                    post   : $this->getPostParameters(),
+                    setup  : $this->getPreParameters($nonce),
+                    update : $this->getPostParameters(),
                     format : ContentFormat::JSON
                 );
                 break;
             case 'XML':
-                $components[] = new ClientCellComponent(
+                $components[] = new ContentComponent(
                     type   : ContentType::DhtmlxForm,
                     content: $this->getXML(),
                     events : $this->getCellEvents(),
-                    pre    : $this->getPreParameters($nonce),
-                    post   : $this->getPostParameters(),
+                    setup  : $this->getPreParameters($nonce),
+                    update : $this->getPostParameters(),
                     format : ContentFormat::XML
                 );
                 break;
         }
         return new ClientCell(
             new ClientCellProperties(
-                nonce     : $nonce,
-                cellHeader: $this->getCellHeader(),
-                pollId    : $this->pollId),
+                nonce                  : $nonce,
+                cellHeader             : $this->getCellHeader(),
+                pollId                 : $this->pollId,
+                hasAsynchronousElements: !empty($this->asynchronousControls)
+            ),
             ...$components,
         );
     }
