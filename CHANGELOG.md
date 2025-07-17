@@ -1,3 +1,10 @@
+# [2.4.0](https://github.com/bespin-studios/byteshard-form/compare/v2.3.8...v2.4.0) (2025-07-17)
+
+
+### Features
+
+* allow public access to addFormObjects ([f92ea5d](https://github.com/bespin-studios/byteshard-form/commit/f92ea5d2c1b6d8d89c2b83cb1ad64d2a2cc6b847))
+
 ## [2.3.8](https://github.com/bespin-studios/byteshard-form/compare/v2.3.7...v2.3.8) (2025-07-15)
 
 
