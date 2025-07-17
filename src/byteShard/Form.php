@@ -232,7 +232,7 @@ abstract class Form extends CellContent implements FormInterface
      * @return object|null
      * @throws Exception
      */
-    protected function defineDataBinding(): ?object
+    public function defineDataBinding(): ?object
     {
         // TODO: this method should actually be called in each cell next to defineCellContent so slower data bindings don't have to be executed every time
         // furthermore this should reduce class dependencies because Database::getArray / getSingle would be called in the cell class instead of this class
@@ -258,7 +258,7 @@ abstract class Form extends CellContent implements FormInterface
      * @param FormObject ...$formObjects
      * @return $this
      */
-    protected function addFormObject(Internal\Form\FormObject ...$formObjects): self
+    public function addFormObject(Internal\Form\FormObject ...$formObjects): self
     {
         foreach ($formObjects as $formObject) {
             //TODO: check if addCell, setSelectedId and setNestedSelectedIds has to be called here or can be moved to a later stage
