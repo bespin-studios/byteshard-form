@@ -51,16 +51,16 @@
         },
         {
             "name": "byteshard/contracts",
-            "version": "v1.0.3",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bespin-studios/byteshard-contracts.git",
-                "reference": "2c426c369f85b8bdc3c9cf301e072d269b64cad6"
+                "reference": "e35240c262c7bc20b04718a38ceee3c08cc6ba75"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bespin-studios/byteshard-contracts/zipball/2c426c369f85b8bdc3c9cf301e072d269b64cad6",
-                "reference": "2c426c369f85b8bdc3c9cf301e072d269b64cad6",
+                "url": "https://api.github.com/repos/bespin-studios/byteshard-contracts/zipball/e35240c262c7bc20b04718a38ceee3c08cc6ba75",
+                "reference": "e35240c262c7bc20b04718a38ceee3c08cc6ba75",
                 "shasum": ""
             },
             "require": {
@@ -88,22 +88,22 @@
             "description": "Package for interfaces and other things used by the byteShard components",
             "support": {
                 "issues": "https://github.com/bespin-studios/byteshard-contracts/issues",
-                "source": "https://github.com/bespin-studios/byteshard-contracts/tree/v1.0.3"
+                "source": "https://github.com/bespin-studios/byteshard-contracts/tree/v1.1.0"
             },
-            "time": "2025-07-10T06:14:17+00:00"
+            "time": "2025-07-19T09:36:36+00:00"
         },
         {
             "name": "byteshard/core",
-            "version": "v2.13.0",
+            "version": "v2.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bespin-studios/byteshard-core.git",
-                "reference": "fdff4fa529b50d3f528af2a01a8f9c947f9441ca"
+                "reference": "0ade3ce4b4223b8e3ad07b1322ac477dc491ddbb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bespin-studios/byteshard-core/zipball/fdff4fa529b50d3f528af2a01a8f9c947f9441ca",
-                "reference": "fdff4fa529b50d3f528af2a01a8f9c947f9441ca",
+                "url": "https://api.github.com/repos/bespin-studios/byteshard-core/zipball/0ade3ce4b4223b8e3ad07b1322ac477dc491ddbb",
+                "reference": "0ade3ce4b4223b8e3ad07b1322ac477dc491ddbb",
                 "shasum": ""
             },
             "require": {
@@ -167,9 +167,9 @@
             "description": "byteShard PHP core",
             "support": {
                 "issues": "https://github.com/bespin-studios/byteshard-core/issues",
-                "source": "https://github.com/bespin-studios/byteshard-core/tree/v2.13.0"
+                "source": "https://github.com/bespin-studios/byteshard-core/tree/v2.14.0"
             },
-            "time": "2025-07-19T07:44:59+00:00"
+            "time": "2025-07-19T08:35:07+00:00"
         },
         {
             "name": "byteshard/debug",
