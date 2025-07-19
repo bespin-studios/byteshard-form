@@ -94,16 +94,16 @@
         },
         {
             "name": "byteshard/core",
-            "version": "v2.12.7",
+            "version": "v2.13.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bespin-studios/byteshard-core.git",
-                "reference": "fcf450c3ee56e33e0daea6f23d065bb48b05261e"
+                "reference": "fdff4fa529b50d3f528af2a01a8f9c947f9441ca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bespin-studios/byteshard-core/zipball/fcf450c3ee56e33e0daea6f23d065bb48b05261e",
-                "reference": "fcf450c3ee56e33e0daea6f23d065bb48b05261e",
+                "url": "https://api.github.com/repos/bespin-studios/byteshard-core/zipball/fdff4fa529b50d3f528af2a01a8f9c947f9441ca",
+                "reference": "fdff4fa529b50d3f528af2a01a8f9c947f9441ca",
                 "shasum": ""
             },
             "require": {
@@ -115,7 +115,6 @@
                 "byteshard/ldap": "^1.0",
                 "byteshard/locale": "^1.0",
                 "byteshard/rest": "^1.0",
-                "byteshard/soap": "^1.0",
                 "byteshard/validate": "^1.0",
                 "ext-ctype": "*",
                 "ext-curl": "*",
@@ -168,9 +167,9 @@
             "description": "byteShard PHP core",
             "support": {
                 "issues": "https://github.com/bespin-studios/byteshard-core/issues",
-                "source": "https://github.com/bespin-studios/byteshard-core/tree/v2.12.7"
+                "source": "https://github.com/bespin-studios/byteshard-core/tree/v2.13.0"
             },
-            "time": "2025-07-15T06:21:40+00:00"
+            "time": "2025-07-19T07:44:59+00:00"
         },
         {
             "name": "byteshard/debug",
@@ -217,16 +216,16 @@
         },
         {
             "name": "byteshard/enum",
-            "version": "v1.4.0",
+            "version": "v1.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bespin-studios/byteshard-enum.git",
-                "reference": "af4f8d07770c23619a2d8290efa426cd0b24277e"
+                "reference": "ec7fdd7ae559a56beb6c0d994a22fede635fd5da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bespin-studios/byteshard-enum/zipball/af4f8d07770c23619a2d8290efa426cd0b24277e",
-                "reference": "af4f8d07770c23619a2d8290efa426cd0b24277e",
+                "url": "https://api.github.com/repos/bespin-studios/byteshard-enum/zipball/ec7fdd7ae559a56beb6c0d994a22fede635fd5da",
+                "reference": "ec7fdd7ae559a56beb6c0d994a22fede635fd5da",
                 "shasum": ""
             },
             "require": {
@@ -253,9 +252,9 @@
             "description": "Global enums for the byteShard framework",
             "support": {
                 "issues": "https://github.com/bespin-studios/byteshard-enum/issues",
-                "source": "https://github.com/bespin-studios/byteshard-enum/tree/v1.4.0"
+                "source": "https://github.com/bespin-studios/byteshard-enum/tree/v1.5.0"
             },
-            "time": "2025-07-11T19:48:54+00:00"
+            "time": "2025-07-17T08:54:05+00:00"
         },
         {
             "name": "byteshard/exception",
@@ -438,51 +437,6 @@
                 "source": "https://github.com/bespin-studios/byteshard-rest/tree/v1.2.2"
             },
             "time": "2025-05-20T12:15:48+00:00"
-        },
-        {
-            "name": "byteshard/soap",
-            "version": "v1.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/bespin-studios/byteshard-soap.git",
-                "reference": "d9c97b3efb94d26666ea720ac4dedd513f960b20"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/bespin-studios/byteshard-soap/zipball/d9c97b3efb94d26666ea720ac4dedd513f960b20",
-                "reference": "d9c97b3efb94d26666ea720ac4dedd513f960b20",
-                "shasum": ""
-            },
-            "require": {
-                "ext-dom": "*",
-                "ext-simplexml": "*",
-                "php": "^8.1"
-            },
-            "require-dev": {
-                "phpstan/phpstan": "^2",
-                "phpunit/phpunit": "^10.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "byteShard\\": "src/byteShard"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MPL-2.0"
-            ],
-            "authors": [
-                {
-                    "name": "Lars Hennig"
-                }
-            ],
-            "description": "SOAP Connector",
-            "support": {
-                "issues": "https://github.com/bespin-studios/byteshard-soap/issues",
-                "source": "https://github.com/bespin-studios/byteshard-soap/tree/v1.0.1"
-            },
-            "time": "2025-05-21T09:25:11+00:00"
         },
         {
             "name": "byteshard/validate",
@@ -1170,22 +1124,22 @@
         },
         {
             "name": "maennchen/zipstream-php",
-            "version": "3.1.2",
+            "version": "3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/maennchen/ZipStream-PHP.git",
-                "reference": "aeadcf5c412332eb426c0f9b4485f6accba2a99f"
+                "reference": "9712d8fa4cdf9240380b01eb4be55ad8dcf71416"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/maennchen/ZipStream-PHP/zipball/aeadcf5c412332eb426c0f9b4485f6accba2a99f",
-                "reference": "aeadcf5c412332eb426c0f9b4485f6accba2a99f",
+                "url": "https://api.github.com/repos/maennchen/ZipStream-PHP/zipball/9712d8fa4cdf9240380b01eb4be55ad8dcf71416",
+                "reference": "9712d8fa4cdf9240380b01eb4be55ad8dcf71416",
                 "shasum": ""
             },
             "require": {
                 "ext-mbstring": "*",
                 "ext-zlib": "*",
-                "php-64bit": "^8.2"
+                "php-64bit": "^8.3"
             },
             "require-dev": {
                 "brianium/paratest": "^7.7",
@@ -1194,7 +1148,7 @@
                 "guzzlehttp/guzzle": "^7.5",
                 "mikey179/vfsstream": "^1.6",
                 "php-coveralls/php-coveralls": "^2.5",
-                "phpunit/phpunit": "^11.0",
+                "phpunit/phpunit": "^12.0",
                 "vimeo/psalm": "^6.0"
             },
             "suggest": {
@@ -1236,7 +1190,7 @@
             ],
             "support": {
                 "issues": "https://github.com/maennchen/ZipStream-PHP/issues",
-                "source": "https://github.com/maennchen/ZipStream-PHP/tree/3.1.2"
+                "source": "https://github.com/maennchen/ZipStream-PHP/tree/3.2.0"
             },
             "funding": [
                 {
@@ -1244,7 +1198,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-01-27T12:07:53+00:00"
+            "time": "2025-07-17T11:15:13+00:00"
         },
         {
             "name": "markbaker/complex",
@@ -2523,16 +2477,16 @@
     "packages-dev": [
         {
             "name": "phpstan/phpstan",
-            "version": "2.1.17",
+            "version": "2.1.18",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "89b5ef665716fa2a52ecd2633f21007a6a349053"
+                "reference": "ee1f390b7a70cdf74a2b737e554f68afea885db7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/89b5ef665716fa2a52ecd2633f21007a6a349053",
-                "reference": "89b5ef665716fa2a52ecd2633f21007a6a349053",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/ee1f390b7a70cdf74a2b737e554f68afea885db7",
+                "reference": "ee1f390b7a70cdf74a2b737e554f68afea885db7",
                 "shasum": ""
             },
             "require": {
@@ -2577,7 +2531,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-05-21T20:55:28+00:00"
+            "time": "2025-07-17T17:22:31+00:00"
         }
     ],
     "aliases": [],

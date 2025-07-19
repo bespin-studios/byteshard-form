@@ -168,7 +168,7 @@ abstract class Form extends CellContent implements FormInterface
      */
     public function getCellContent(): ?ClientCell
     {
-        $components = parent::getComponents();
+
         $this->cell->clearContentObjectTypes();
         $nonce = $this->cell->getNonce();
         switch ($this->getAccessType()) {
@@ -180,6 +180,9 @@ abstract class Form extends CellContent implements FormInterface
                 break;
             case Enum\AccessType::R:
                 $this->defineCellContent();
+                if ($this->hasFallbackContent()) {
+                    return $this->getFallbackContent()->getCellContent();
+                }
                 $this->queryData();
                 $this->data_binding = $this->defineDataBinding();
                 $this->evaluate($nonce);
@@ -188,11 +191,15 @@ abstract class Form extends CellContent implements FormInterface
             case Enum\AccessType::RW:
                 $this->setRequestTimestamp();
                 $this->defineCellContent();
+                if ($this->hasFallbackContent()) {
+                    return $this->getFallbackContent()->getCellContent();
+                }
                 $this->queryData();
                 $this->data_binding = $this->defineDataBinding();
                 $this->evaluate($nonce);
                 break;
         }
+        $components = parent::getComponents();
         $this->evaluateContentEvents();
         session_write_close();
         switch ($this->cell->getContentFormat()) {
