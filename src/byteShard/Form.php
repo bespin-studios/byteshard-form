@@ -10,6 +10,7 @@ use byteShard\Enum\ContentFormat;
 use byteShard\Enum\ContentType;
 use byteShard\Form\Control;
 use byteShard\Form\FormInterface;
+use byteShard\Form\FormSettingsInterface;
 use byteShard\Form\Settings;
 use byteShard\Internal\CellContent;
 use byteShard\Internal\ClientData\ProcessedClientData;
@@ -43,7 +44,7 @@ abstract class Form extends CellContent implements FormInterface
     private array $formObjects          = [];
     private array $formObjectParameters = [];
 
-    private ?Settings $formSettings = null;
+    private ?FormSettingsInterface $formSettings = null;
     private array     $eventArray   = [];
     private string    $query        = '';
 
@@ -166,9 +167,9 @@ abstract class Form extends CellContent implements FormInterface
      * @throws \Exception
      * @internal
      */
-    public function getCellContent(): ?ClientCell
+    public function getCellContent(bool $resetNonce = true): ?ClientCell
     {
-        $components = parent::getComponents();
+        parent::getCellContent($resetNonce);
         $this->cell->clearContentObjectTypes();
         $nonce = $this->cell->getNonce();
         switch ($this->getAccessType()) {
@@ -180,6 +181,9 @@ abstract class Form extends CellContent implements FormInterface
                 break;
             case Enum\AccessType::R:
                 $this->defineCellContent();
+                if ($this->hasFallbackContent()) {
+                    return $this->getFallbackContent()->getCellContent(false);
+                }
                 $this->queryData();
                 $this->data_binding = $this->defineDataBinding();
                 $this->evaluate($nonce);
@@ -188,11 +192,15 @@ abstract class Form extends CellContent implements FormInterface
             case Enum\AccessType::RW:
                 $this->setRequestTimestamp();
                 $this->defineCellContent();
+                if ($this->hasFallbackContent()) {
+                    return $this->getFallbackContent()->getCellContent(false);
+                }
                 $this->queryData();
                 $this->data_binding = $this->defineDataBinding();
                 $this->evaluate($nonce);
                 break;
         }
+        $components = parent::getComponents();
         $this->evaluateContentEvents();
         session_write_close();
         switch ($this->cell->getContentFormat()) {
@@ -276,11 +284,7 @@ abstract class Form extends CellContent implements FormInterface
         return $this;
     }
 
-    /**
-     * @param Settings $formSettings
-     * @return $this
-     */
-    public function addFormSettings(Settings $formSettings): self
+    public function addFormSettings(FormSettingsInterface $formSettings): self
     {
         $this->formSettings = $formSettings;
         return $this;
