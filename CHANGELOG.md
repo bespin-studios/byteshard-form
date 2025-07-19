@@ -1,3 +1,15 @@
+# [2.5.0](https://github.com/bespin-studios/byteshard-form/compare/v2.4.0...v2.5.0) (2025-07-19)
+
+
+### Bug Fixes
+
+* use from settings interface to reduce dependencies ([ef715d9](https://github.com/bespin-studios/byteshard-form/commit/ef715d923d37234d73f8f8f1734f9cf9323d8ff5))
+
+
+### Features
+
+* form cells now have fallback content as well ([923cfcb](https://github.com/bespin-studios/byteshard-form/commit/923cfcb4c71e905f14fba26a10633efba7b9bf43))
+
 # [2.4.0](https://github.com/bespin-studios/byteshard-form/compare/v2.3.8...v2.4.0) (2025-07-17)
 
 
