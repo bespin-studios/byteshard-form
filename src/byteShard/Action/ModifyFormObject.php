@@ -150,6 +150,12 @@ abstract class ModifyFormObject extends Action implements ClientExecutionInterfa
         if ($this instanceof Form\SelectComboOption) {
             return $this->getComboOptionToSelect($cellNonce);
         }
+        if ($this instanceof SetRequiredFormObject) {
+            return true;
+        }
+        if ($this instanceof UnsetRequiredFormObject) {
+            return false;
+        }
         return $this->modification;
     }
 }
