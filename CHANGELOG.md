@@ -1,3 +1,10 @@
+## [2.5.1](https://github.com/bespin-studios/byteshard-form/compare/v2.5.0...v2.5.1) (2025-07-30)
+
+
+### Bug Fixes
+
+* setRequired and unsetRequired actions were not working correctly ([397b47e](https://github.com/bespin-studios/byteshard-form/commit/397b47e4b8cd59c3ba3e9e27b81b27bd33f48b51))
+
 # [2.5.0](https://github.com/bespin-studios/byteshard-form/compare/v2.4.0...v2.5.0) (2025-07-19)
 
 
