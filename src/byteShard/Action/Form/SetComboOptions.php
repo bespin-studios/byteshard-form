@@ -18,7 +18,6 @@ class SetComboOptions extends Action
 
     public function __construct(string $cell, string ...$comboItems)
     {
-        parent::__construct();
         $this->cell = Cell::getContentCellName($cell);
         if (!Cell::isFormContent($cell)) {
             Debug::error(__METHOD__.' Action can only be used in Form');
@@ -28,7 +27,6 @@ class SetComboOptions extends Action
                 $this->comboItems[$comboItem] = $comboItem;
             }
         }
-        $this->addUniqueID($this->cell, $this->comboItems);
     }
 
     protected function runAction(): ActionResultInterface

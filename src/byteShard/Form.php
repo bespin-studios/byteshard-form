@@ -92,16 +92,6 @@ abstract class Form extends CellContent implements FormInterface
     private array  $asynchronousControls = [];
 
     /**
-     * Form constructor.
-     * @param Cell $cell
-     * @throws Exception
-     */
-    public function __construct(Cell $cell)
-    {
-        parent::__construct($cell);
-    }
-
-    /**
      * @return void
      * @API
      */
@@ -284,7 +274,7 @@ abstract class Form extends CellContent implements FormInterface
         return $this;
     }
 
-    public function addFormSettings(FormSettingsInterface $formSettings): self
+    public function addFormSettings(FormSettingsInterface $formSettings): static
     {
         $this->formSettings = $formSettings;
         return $this;
@@ -309,7 +299,7 @@ abstract class Form extends CellContent implements FormInterface
     {
         if (!empty($this->formObjects)) {
             $randomIdArray     = [];
-            $localeToken       = $this->cell->createLocaleBaseToken('Cell').'.Form.';
+            $localeToken = Locale::getScopeLocaleTokenBasedOnNamespace($this).'.Form.';
             $defaultInputWidth = $this->formSettings?->getInputWidth();
             foreach ($this->formObjects as $formObject) {
                 $formObjectId = $formObject->getFormObjectId();
@@ -561,13 +551,10 @@ abstract class Form extends CellContent implements FormInterface
         return $result;
     }
 
-    /**
-     * @session write (Cell::registerContentEvent)
-     * @throws Exception
-     */
     private function evaluateContentEvents(): void
     {
-        foreach ($this->getEvents() as $event) {
+        //TODO: check if this is needed in fact. OnPoll should work different these days
+        /*foreach ($this->getEvents() as $event) {
             // only one poll action per cell is currently allowed
             if ($this->event_on_poll === false && $event instanceof Form\Event\OnPoll) {
                 $actions = $event->getActionArray();
@@ -579,8 +566,7 @@ abstract class Form extends CellContent implements FormInterface
                     }
                 }
             }
-            $this->cell->registerContentEvent($event);
-        }
+        }*/
     }
 
     private function getPreParameters(string $nonce): array

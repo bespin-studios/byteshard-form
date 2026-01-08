@@ -21,7 +21,6 @@ class SetFormObjectNote extends Action
 
     public function __construct(string $cell, string ...$objects)
     {
-        parent::__construct();
         $this->cell = Cell::getContentCellName($cell);
         foreach ($objects as $object) {
             if ($object !== '') {

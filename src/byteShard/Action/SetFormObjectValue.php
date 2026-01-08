@@ -13,6 +13,9 @@ use byteShard\Form\Control\Checkbox;
 use byteShard\Form\Control\Radio;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
+use byteShard\Internal\ContentClassFactory;
+use byteShard\Internal\Traits\Action\MethodCallback;
+use byteShard\Session;
 use Closure;
 use DateTime;
 use ReflectionClass;
@@ -24,29 +27,27 @@ use ReflectionException;
  */
 class SetFormObjectValue extends Action
 {
-    private string  $cell;
-    private Closure $closure;
-    private array   $formControls = [];
-    private string  $method;
-    private mixed   $methodParameter;
-    private mixed   $newValue;
-    private ?object $objectMap;
+    use MethodCallback;
+
+    private string               $cell;
+    private ?Closure             $closure      = null;
+    private array                $formControls = [];
+    private ?string              $method       = null;
+    private mixed                $methodParameter;
+    private null|string|DateTime $newValue     = null;
+    private ?object              $objectMap    = null;
 
     /**
      * SetFormObjectValue constructor.
-     * @param string $cell
-     * @param string ...$objects
      */
-    public function __construct(string $cell, string ...$objects)
+    public function __construct(string $cell, string ...$formControls)
     {
-        parent::__construct();
         $this->cell = Cell::getContentCellName($cell);
-        foreach ($objects as $object) {
-            if ($object !== '') {
-                $this->formControls[$object] = $object;
+        foreach ($formControls as $formControl) {
+            if ($formControl !== '') {
+                $this->formControls[$formControl] = $formControl;
             }
         }
-        $this->addUniqueID($this->cell, $this->formControls);
     }
 
     /**
@@ -78,8 +79,6 @@ class SetFormObjectValue extends Action
      */
     public function setClosure(Closure $closure): self
     {
-        // TODO: does this even work?
-        // closures cannot be stored in the session...
         $this->closure = $closure;
         return $this;
     }
@@ -106,141 +105,123 @@ class SetFormObjectValue extends Action
         return $this;
     }
 
+    protected function runAction(): ActionResultInterface
+    {
+        $action = new Action\CellActionResult(Action\ActionTargetEnum::Cell);
+        $cells  = $this->getCells([$this->cell]);
+        if (empty($cells)) {
+            return $action;
+        }
+        $cell   = $cells[0];
+        $result = $this->resolveValue($cell);
+
+        if ($result === null) {
+            return $action;
+        }
+
+        $parameters = $this->getParameters($cell, $result);
+        if (!empty($parameters)) {
+            $action->addCellCommand([$this->cell], 'setObjectData', $parameters);
+        }
+        return $action;
+    }
+
+    private function resolveValue(Cell $cell): string|null|object
+    {
+        if ($this->objectMap !== null) {
+            return $this->objectMap;
+        }
+        if ($this->newValue !== null) {
+            return $this->newValue;
+        }
+        if (isset($this->closure)) {
+            return ($this->closure)();
+        }
+        if ($this->method !== null) {
+            return $this->getNewValueByCallbackMethod($cell, $this->method, $this->methodParameter);
+        }
+        return null;
+    }
+
+    private function getParameters(Cell $cell, object|string $valueMap): array
+    {
+        $parameters = [];
+        foreach ($this->getFormControls($cell) as $encryptedId => $control) {
+            $value = is_string($valueMap) || $valueMap instanceof DateTime
+                ? $valueMap
+                : ($valueMap->{$control['name']} ?? null);
+
+            if ($value !== null) {
+                $clientValue = $this->getClientValue($control['objectType'], $value, $control['radioValue']);
+                if ($control['objectType'] === Radio::class) {
+                    $parameters['radio'][$encryptedId] = $clientValue;
+                } else {
+                    $parameters[$encryptedId] = $clientValue;
+                }
+            }
+        }
+        return $parameters;
+    }
+
     private function getFormControls(Cell $cell): array
     {
         $result   = [];
         $controls = $cell->getContentControlType();
         foreach ($this->formControls as $formControl) {
-            $radioValue = null;
-            if (str_contains($formControl, '::')) {
-                [$formControl, $radioValue] = explode('::', $formControl);
-            }
+            [$controlName, $radioValue] = $this->parseFormControl($formControl);
+
             foreach ($controls as $encryptedId => $control) {
-                if ($control['name'] === $formControl) {
+                if ($control['name'] === $controlName) {
                     $result[$encryptedId] = [
                         'name'       => $control['name'],
                         'objectType' => $control['objectType'],
-                        'radioValue' => 'all_radio_options'
+                        'radioValue' => $this->resolveRadioValue($control, $radioValue),
                     ];
-                    if ($radioValue !== null && $control['objectType'] === Radio::class) {
-                        $encryptedRadioValue                = array_search($radioValue, $control['radio_value'], true);
-                        $result[$encryptedId]['radioValue'] = $encryptedRadioValue !== false ? $encryptedRadioValue : null;
-                    }
                 }
             }
         }
         return $result;
     }
 
-    /** @throws \Exception */
-    private function getNewValue(string $formControl, string $objectType, ?string $radioValue, mixed $newValueByCallback): null|string|bool|array
+    private function parseFormControl(string $formControl): array
     {
-        $newValue = null;
-        if (isset($this->objectMap)) {
-            if (property_exists($this->objectMap, $formControl)) {
-                $newValue = $this->objectMap->{$formControl};
-            }
-        } else {
-            $newValue = $this->newValue ?? $newValueByCallback;
-        }
-        if ($newValue !== null) {
-            switch ($objectType) {
-                case Radio::class:
-                    if ($radioValue !== null) {
-                        $newValue = ($newValue) ? [$radioValue => true] : [$radioValue => false];
-                    }
-                    break;
-                case Checkbox::class:
-                    $newValue = (bool)$newValue;
-                    break;
-                case Calendar::class:
-                    //TODO: get Server Date Format from Session, modify value
-                    if ($newValue instanceof DateTime) {
-                        $newValue = $newValue->format('Y-m-d');
-                    } elseif (empty($newValue)) {
-                        $newValue = '';
-                    } else {
-                        throw new \Exception('DateTime expected in setFormObjectValue for object of type calendar');
-                    }
-                    break;
-            }
-        }
-        return $newValue;
+        return str_contains($formControl, '::')
+            ? explode('::', $formControl, 2)
+            : [$formControl, null];
     }
 
-    /** @throws \Exception|Exception */
-    protected function runAction(): ActionResultInterface
+    private function resolveRadioValue(array $control, ?string $radioValue): ?string
     {
-        $id                 = $this->getLegacyId();
-        $action             = [];
-        $cells              = $this->getCells([$this->cell]);
-        $newValueByCallback = null;
-        if (isset($this->closure)) {
-            $newValueByCallback = $this->closure->__invoke($id);
+        if ($radioValue === null || $control['objectType'] !== Radio::class) {
+            return 'all_radio_options';
         }
-        foreach ($cells as $cell) {
-            if ($newValueByCallback === null && isset($this->method)) {
-                $newValueByCallback = $this->getNewValueByCallbackMethod($cell, $id);
-            }
-            $controls = $this->getFormControls($cell);
-            foreach ($controls as $encryptedId => $control) {
-                $newValue = $this->getNewValue($control['name'], $control['objectType'], $control['radioValue'], $newValueByCallback);
-                if ($newValue !== null) {
-                    if ($control['objectType'] === Radio::class) {
-                        $action['LCell'][$cell->containerId()][$cell->cellId()]['setObjectData']['radio'][$encryptedId] = $newValue;
-                    } else {
-                        $action['LCell'][$cell->containerId()][$cell->cellId()]['setObjectData'][$encryptedId] = $newValue;
-                    }
-                }
-            }
-        }
-        return new Action\ActionResultMigrationHelper($action);
+
+        $encryptedRadioValue = array_search($radioValue, $control['radio_value'], true);
+        return $encryptedRadioValue !== false ? $encryptedRadioValue : null;
     }
 
-    /**
-     * @param Cell $cell
-     * @param $id
-     * @return string|null
-     * @throws Exception
-     */
-    private function getNewValueByCallbackMethod(Cell $cell, &$id): ?string
+    private function getClientValue(string $objectType, mixed $objectValue, ?string $radioValue = null): mixed
     {
-        $result           = [];
-        $contentClassName = $cell->getContentClass();
-        if (class_exists($contentClassName) && method_exists($contentClassName, $this->method)) {
-            try {
-                $argumentTest     = new ReflectionClass($contentClassName);
-                $reflectionMethod = $argumentTest->getMethod($this->method);
-            } catch (ReflectionException $exception) {
-                throw new Exception($exception->getMessage());
-            }
-            $numberOfParameters = $reflectionMethod->getNumberOfParameters();
-            if (in_array($numberOfParameters, [0, 1, 2])) {
-                $call = new $contentClassName($cell);
-                $call->setProcessedClientData($this->getClientData());
-                $call->setClientTimeZone($this->getClientTimeZone());
-                if ($numberOfParameters === 2) {
-                    $result = $call->{$this->method}($id, $this->methodParameter);
-                } elseif ($numberOfParameters === 1) {
-                    $result = $call->{$this->method}($id);
-                } else {
-                    $result = $call->{$this->method}();
-                }
-                if (is_array($result) && array_key_exists('run_nested', $result) && is_bool($result['run_nested'])) {
-                    $this->setRunNested($result['run_nested']);
-                    unset($result['run_nested']);
-                }
-            } else {
-                $e = new Exception('Any method that will be called by Action\\SetFormObjectValue needs to have exactly one or two parameters');
-                $e->setLocaleToken('byteShard.action.logicException.getNewValueByCallbackMethod.wrongParameterCount');
-                throw $e;
-            }
+        if ($objectValue === null) {
+            return null;
         }
-        if (is_array($result) && array_key_exists('newValue', $result)) {
-            return $result['newValue'];
-        } elseif (is_string($result)) {
-            return $result;
+
+        return match ($objectType) {
+            Radio::class    => $radioValue !== null ? [$radioValue => (bool)$objectValue] : $objectValue,
+            Checkbox::class => (bool)$objectValue,
+            Calendar::class => $this->formatCalendarValue($objectValue),
+            default         => $objectValue
+        };
+    }
+
+    private function formatCalendarValue(mixed $value): string
+    {
+        if (empty($value)) {
+            return '';
         }
-        return null;
+        if ($value instanceof DateTime) {
+            return $value->format('Y-m-d');
+        }
+        throw new \Exception('DateTime expected in setFormObjectValue for object of type calendar');
     }
 }

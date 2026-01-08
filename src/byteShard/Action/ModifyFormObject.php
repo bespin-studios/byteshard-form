@@ -34,21 +34,19 @@ abstract class ModifyFormObject extends Action implements ClientExecutionInterfa
     /**
      * ModifyFormObject constructor.
      * @param string $cell
-     * @param string ...$formItems
+     * @param string ...$formControls
      */
-    public function __construct(string $cell, string ...$formItems)
+    public function __construct(string $cell, string ...$formControls)
     {
-        parent::__construct();
         $this->cell = Cell::getContentCellName($cell);
         if (!Cell::isFormContent($cell)) {
             Debug::error(__METHOD__.' Action can only be used in Form');
         }
-        foreach ($formItems as $formItem) {
-            if ($formItem !== '') {
-                $this->formItems[$formItem] = $formItem;
+        foreach ($formControls as $formControl) {
+            if ($formControl !== '') {
+                $this->formItems[$formControl] = $formControl;
             }
         }
-        $this->addUniqueID($this->cell, $this->formItems);
     }
 
     public function getClientExecutionMethod(): string
@@ -83,7 +81,7 @@ abstract class ModifyFormObject extends Action implements ClientExecutionInterfa
      * this only works if the action is attached to a combo
      * @API
      */
-    public function setComboOptions(Option|string|int ...$options)
+    public function setComboOptions(Option|string|int ...$options): static
     {
         foreach ($options as $option) {
             if ($option instanceof Option) {
@@ -94,55 +92,75 @@ abstract class ModifyFormObject extends Action implements ClientExecutionInterfa
                 $this->options[(string)$option] = (string)$option;
             }
         }
+        return $this;
     }
 
     protected function runAction(): ActionResultInterface
     {
-        $id     = $this->getLegacyId();
         $modify = true;
         if (!empty($this->options)) {
-            $selectedId = $id[key($id)];
+            $eventId    = $this->getActionInitDTO()->eventId;
+            $selectedId = (string)$this->getClientData()->{$eventId};
             if (!array_key_exists($selectedId, $this->options)) {
                 $modify = false;
             }
         }
-        if ($modify === true) {
-            $cells = $this->getCells([$this->cell]);
-            foreach ($cells as $cell) {
-                $controls = $cell->getContentControlType();
-                foreach ($this->formItems as $formItem) {
-                    if (str_contains($formItem, '::')) {
-                        $item              = explode('::', $formItem);
-                        $encryptedFormItem = $cell->getEncryptedName($item[0]);
-                        if (isset($controls[$encryptedFormItem])) {
-                            if ($controls[$encryptedFormItem]['objectType'] === Radio::class) {
-                                $encryptedItemValue = array_search($item[1], $controls[$encryptedFormItem]['radio_value'], true);
-                                if ($encryptedItemValue !== false) {
-                                    $modification = $this->getModification($cell->getNonce());
-                                    if ($modification !== null) {
-                                        $action['LCell'][$cell->containerId()][$cell->cellId()]['modifyObjects']['radio'][$encryptedFormItem][$encryptedItemValue][$this->modification] = $modification;
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        $encryptedFormItem = $cell->getEncryptedName($formItem);
-                        if ($encryptedFormItem !== null) {
-                            $modification = $this->getModification($cell->getNonce());
-                            if ($modification !== null) {
-                                if (isset($controls[$encryptedFormItem]) && $controls[$encryptedFormItem]['objectType'] === Radio::class) {
-                                    $action['LCell'][$cell->containerId()][$cell->cellId()]['modifyObjects']['radio'][$encryptedFormItem]['all_radio_options'][$this->modification] = $modification;
-                                } else {
-                                    $action['LCell'][$cell->containerId()][$cell->cellId()]['modifyObjects'][$encryptedFormItem][$this->modification] = $modification;
-                                }
-                            }
-                        }
-                    }
-                }
+        $action = new Action\CellActionResult(Action\ActionTargetEnum::Cell);
+        if ($modify === false) {
+            return $action;
+        }
+
+        $cells = $this->getCells([$this->cell]);
+        if ($cells === null) {
+            return $action;
+        }
+        $cell     = $cells[0];
+        $controls = $cell->getContentControlType();
+
+        foreach ($this->formItems as $formItem) {
+            $param = $this->buildModificationParam($cell, $controls, $formItem);
+            if (!empty($param)) {
+                $action->addCellCommand([$this->cell], 'modifyObjects', $param);
             }
         }
-        $action['state'] = 2;
-        return new Action\ActionResultMigrationHelper($action);
+        return $action;
+    }
+
+    private function buildModificationParam(Cell $cell, array $controls, string $formItem): array
+    {
+        [$encryptedFormItem, $radioValue] = $this->parseFormItem($cell, $formItem);
+        if ($encryptedFormItem === null || !isset($controls[$encryptedFormItem])) {
+            return [];
+        }
+
+        $modification = $this->getModification($cell->getNonce());
+        if ($modification === null) {
+            return [];
+        }
+        if ($controls[$encryptedFormItem]['objectType'] === Radio::class) {
+            if ($radioValue !== null) {
+                return $this->buildRadioSpecificParam($controls[$encryptedFormItem], $encryptedFormItem, $radioValue, $modification);
+            }
+            return ['radio' => [$encryptedFormItem => ['all_radio_options' => [$this->modification => $modification]]]];
+        }
+        return [$encryptedFormItem => [$this->modification => $modification]];
+    }
+
+    private function parseFormItem(Cell $cell, string $formItem): array
+    {
+        [$controlName, $radioValue] = str_contains($formItem, '::')
+            ? explode('::', $formItem, 2)
+            : [$formItem, null];
+        return [$cell->getEncryptedName($controlName), $radioValue];
+    }
+
+    private function buildRadioSpecificParam(array $control, string $encryptedFormItem, string $radioValue, mixed $modification): array
+    {
+        $encryptedRadioValue = array_search($radioValue, $control['radio_value'], true);
+        if ($encryptedRadioValue === false) {
+            return [];
+        }
+        return ['radio' => [$encryptedFormItem => [$encryptedRadioValue => [$this->modification => $modification]]]];
     }
 
     private function getModification(string $cellNonce): mixed
