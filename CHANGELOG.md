@@ -1,3 +1,10 @@
+# [2.6.0](https://github.com/bespin-studios/byteshard-form/compare/v2.5.1...v2.6.0) (2026-01-08)
+
+
+### Features
+
+* implement new action layout ([52fdd03](https://github.com/bespin-studios/byteshard-form/commit/52fdd0398e0ef7ed18633ff20dc15052f5a06c0c))
+
 ## [2.5.1](https://github.com/bespin-studios/byteshard-form/compare/v2.5.0...v2.5.1) (2025-07-30)
 
 
