@@ -32,10 +32,8 @@ class AddControl extends Action
      */
     public function __construct(string $cell, FormObject ...$formControls)
     {
-        parent::__construct();
         $this->cell         = Cell::getContentCellName($cell);
         $this->formControls = $formControls;
-        $this->addUniqueID($this->cell, $this->formControls);
     }
 
     /**

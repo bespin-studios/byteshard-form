@@ -7,12 +7,10 @@
 namespace byteShard\Action;
 
 use byteShard\Cell;
-use byteShard\Exception;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
+use byteShard\Internal\Traits\Action\MethodCallback;
 use Closure;
-use ReflectionClass;
-use ReflectionException;
 
 /**
  * Class SetFormObjectLabel
@@ -20,31 +18,31 @@ use ReflectionException;
  */
 class SetFormObjectLabel extends Action
 {
+    use MethodCallback;
+
     private string  $cell;
     private array   $formControls = [];
     private ?object $objectMap    = null;
     private ?string $newValue     = null;
 
-    private Closure $closure;
-    private string  $method;
-    private mixed   $methodParameter;
+    private ?Closure $closure = null;
+    private ?string  $method  = null;
+    private mixed    $methodParameter;
 
 
     /**
      * SetFormObjectLabel constructor.
      * @param string $cell
-     * @param string ...$objects
+     * @param string ...$formControls
      */
-    public function __construct(string $cell, string ...$objects)
+    public function __construct(string $cell, string ...$formControls)
     {
-        parent::__construct();
         $this->cell = Cell::getContentCellName($cell);
-        foreach ($objects as $object) {
-            if ($object !== '') {
-                $this->formControls[$object] = $object;
+        foreach ($formControls as $formControl) {
+            if ($formControl !== '') {
+                $this->formControls[$formControl] = $formControl;
             }
         }
-        $this->addUniqueID($this->cell, $this->formControls);
     }
 
     /**
@@ -76,19 +74,16 @@ class SetFormObjectLabel extends Action
      */
     public function setClosure(Closure $closure): self
     {
-        // TODO: does this even work?
-        // closures cannot be stored in the session...
         $this->closure = $closure;
         return $this;
     }
 
     /**
      * The method must be declared as public in the target cell.
-     * It will be called with up to two parameters.
-     * The first one is always the client data.
-     * If a second parameter is defined, whatever is defined as $parameter will be passed to the callback method
-     * The callback method must return an array with the key 'newValue'. This will be applied to all defined form objects
-     * The callback method can also return the array key 'run_nested' with a boolean value
+     * It will be called and the $parameters are unpacked
+     * The callback method can return a string or a numeric or an array or an object
+     * If the callback method returns an array or an object a property/key named newValue must exist and contain a string
+     * In addition the array/object can contain a property/key named runNested with a boolean
      *
      * @param string $method
      * @param mixed $parameter
@@ -104,78 +99,69 @@ class SetFormObjectLabel extends Action
 
     protected function runAction(): ActionResultInterface
     {
-        $id     = $this->getLegacyId();
-        $action = [];
+        $action = new Action\CellActionResult(Action\ActionTargetEnum::Cell);
         $cells  = $this->getCells([$this->cell]);
-        foreach ($cells as $cell) {
-            if ($this->objectMap !== null) {
-                foreach ($this->formControls as $formControlName) {
-                    if (property_exists($this->objectMap, $formControlName)) {
-                        $newValue                                                                                       = $this->objectMap->{$formControlName};
-                        $encryptedClientName                                                                            = $cell->getEncryptedName($formControlName);
-                        $action['LCell'][$cell->containerId()][$cell->cellId()]['setObjectLabel'][$encryptedClientName] = $newValue;
-                    }
-                }
-            } else {
-                $newValue = null;
-                if ($this->newValue !== null) {
-                    $newValue = $this->newValue;
-                } elseif (isset($this->closure)) {
-                    $newValue = $this->closure->__invoke($id);
-                } elseif (isset($this->method)) {
-                    $newValue = $this->getNewValueByCallbackMethod($cell, $id);
-                }
-                if ($newValue !== null) {
-                    foreach ($this->formControls as $formControlName) {
-                        $encryptedClientName = $cell->getEncryptedName($formControlName);
-                        if ($encryptedClientName !== null) {
-                            $action['LCell'][$cell->containerId()][$cell->cellId()]['setObjectLabel'][$encryptedClientName] = $newValue;
-                        }
-                    }
-                }
-            }
+        if (empty($cells)) {
+            return $action;
         }
-        return new Action\ActionResultMigrationHelper($action);
+        $cell   = $cells[0];
+        $result = $this->resolveValue($cell);
+
+        if ($result === null) {
+            return $action;
+        }
+        if (is_object($result)) {
+            $parameters = $this->buildObjectMapParameters($cell, $result);
+        } elseif (is_string($result)) {
+            $parameters = $this->buildScalarParameters($cell, $result);
+        }
+
+        if (!empty($parameters)) {
+            $action->addCellCommand([$this->cell], 'setObjectLabel', $parameters);
+        }
+        return $action;
     }
 
-    /**
-     * @param Cell $cell
-     * @param $id
-     * @return null|string|array
-     * @throws Exception|ReflectionException
-     */
-    private function getNewValueByCallbackMethod(Cell $cell, &$id): null|string|array
+    private function resolveValue(Cell $cell): string|null|object
     {
-        $result           = [];
-        $contentClassName = $cell->getContentClass();
-        if (class_exists($contentClassName) && method_exists($contentClassName, $this->method)) {
-            $argumentTest     = new ReflectionClass($contentClassName);
-            $reflectionMethod = $argumentTest->getMethod($this->method);
-            if ($reflectionMethod->getNumberOfParameters() === 2) {
-                $call   = new $contentClassName($cell);
-                $result = $call->{$this->method}($id, $this->methodParameter);
-                if (is_array($result) && array_key_exists('run_nested', $result) && is_bool($result['run_nested'])) {
-                    $this->setRunNested($result['run_nested']);
-                    unset($result['run_nested']);
-                }
-            } elseif ($reflectionMethod->getNumberOfParameters() === 1) {
-                $call   = new $contentClassName($cell);
-                $result = $call->{$this->method}($id);
-                if (is_array($result) && array_key_exists('run_nested', $result) && is_bool($result['run_nested'])) {
-                    $this->setRunNested($result['run_nested']);
-                    unset($result['run_nested']);
-                }
-            } else {
-                $e = new Exception('Any method that will be called by Action\\SetFormObjectValue needs to have exactly one or two parameters');
-                $e->setLocaleToken('byteShard.action.exception.getNewValueByCallbackMethod.wrongParameterCount');
-                throw $e;
-            }
+        if ($this->objectMap !== null) {
+            return $this->objectMap;
         }
-        if (is_array($result) && array_key_exists('newValue', $result)) {
-            return $result['newValue'];
-        } elseif (is_string($result)) {
-            return $result;
+        if ($this->newValue !== null) {
+            return $this->newValue;
+        }
+        if (isset($this->closure)) {
+            return ($this->closure)();
+        }
+        if ($this->method !== null) {
+            return $this->getNewValueByCallbackMethod($cell, $this->method, $this->methodParameter);
         }
         return null;
+    }
+
+    private function buildObjectMapParameters(Cell $cell, object $objectMap): array
+    {
+        $parameters = [];
+        foreach ($this->formControls as $formControlName) {
+            if (property_exists($objectMap, $formControlName)) {
+                $encryptedClientName = $cell->getEncryptedName($formControlName);
+                if ($encryptedClientName !== null) {
+                    $parameters[$encryptedClientName] = $objectMap->{$formControlName};
+                }
+            }
+        }
+        return $parameters;
+    }
+
+    private function buildScalarParameters(Cell $cell, string $value): array
+    {
+        $parameters = [];
+        foreach ($this->formControls as $formControlName) {
+            $encryptedClientName = $cell->getEncryptedName($formControlName);
+            if ($encryptedClientName !== null) {
+                $parameters[$encryptedClientName] = $value;
+            }
+        }
+        return $parameters;
     }
 }
