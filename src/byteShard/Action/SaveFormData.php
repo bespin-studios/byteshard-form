@@ -26,7 +26,7 @@ class SaveFormData extends Action
     protected function runAction(): ActionResultInterface
     {
         $result      = ['state' => 2];
-        $cellContent = $this->getEventContainer();
+        $cellContent = $this->getActionInitDTO()->eventContainer;
         if ($cellContent instanceof CellContent) {
             if ($cellContent->getAccessType() !== AccessType::RW) {
                 return $this->getErrorPopup($cellContent);
