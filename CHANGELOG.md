@@ -1,3 +1,10 @@
+## [2.6.2](https://github.com/bespin-studios/byteshard-form/compare/v2.6.1...v2.6.2) (2026-01-09)
+
+
+### Bug Fixes
+
+* modifyFormObject not able to modify multiple items at once ([12b1779](https://github.com/bespin-studios/byteshard-form/commit/12b1779dc200dc9784b375c6e4fc5ffcd0de21ff))
+
 ## [2.6.1](https://github.com/bespin-studios/byteshard-form/compare/v2.6.0...v2.6.1) (2026-01-09)
 
 
