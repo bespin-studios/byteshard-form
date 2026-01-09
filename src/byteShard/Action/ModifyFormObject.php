@@ -8,6 +8,7 @@ namespace byteShard\Action;
 
 use byteShard\Cell;
 use byteShard\Combo\Option;
+use byteShard\DynamicCellContent;
 use byteShard\Form\Control\Radio;
 use byteShard\ID\ID;
 use byteShard\Internal\Action;
@@ -39,9 +40,6 @@ abstract class ModifyFormObject extends Action implements ClientExecutionInterfa
     public function __construct(string $cell, string ...$formControls)
     {
         $this->cell = Cell::getContentCellName($cell);
-        if (!Cell::isFormContent($cell)) {
-            Debug::error(__METHOD__.' Action can only be used in Form');
-        }
         foreach ($formControls as $formControl) {
             if ($formControl !== '') {
                 $this->formItems[$formControl] = $formControl;
@@ -117,11 +115,12 @@ abstract class ModifyFormObject extends Action implements ClientExecutionInterfa
         $cell     = $cells[0];
         $controls = $cell->getContentControlType();
 
+        $param = [];
         foreach ($this->formItems as $formItem) {
-            $param = $this->buildModificationParam($cell, $controls, $formItem);
-            if (!empty($param)) {
-                $action->addCellCommand([$this->cell], 'modifyObjects', $param);
-            }
+            $param[] = $this->buildModificationParam($cell, $controls, $formItem);
+        }
+        if (!empty($param)) {
+            $action->addCellCommand([$this->cell], 'modifyObjects', array_merge_recursive(...$param));
         }
         return $action;
     }
