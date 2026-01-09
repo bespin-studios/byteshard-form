@@ -1,3 +1,10 @@
+## [2.6.1](https://github.com/bespin-studios/byteshard-form/compare/v2.6.0...v2.6.1) (2026-01-09)
+
+
+### Bug Fixes
+
+* saveFormData was not working anymore after the refactoring of actions ([7041301](https://github.com/bespin-studios/byteshard-form/commit/704130179e3ec1898a39b635052cfeb4a04ad547))
+
 # [2.6.0](https://github.com/bespin-studios/byteshard-form/compare/v2.5.1...v2.6.0) (2026-01-08)
 
 
