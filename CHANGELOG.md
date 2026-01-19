@@ -1,3 +1,10 @@
+## [2.6.3](https://github.com/bespin-studios/byteshard-form/compare/v2.6.2...v2.6.3) (2026-01-19)
+
+
+### Bug Fixes
+
+* use dynamic cell for dynamic cell content ([4ff1c19](https://github.com/bespin-studios/byteshard-form/commit/4ff1c19e68ae4ed2167c8b426fd7fb7812d5e824))
+
 ## [2.6.2](https://github.com/bespin-studios/byteshard-form/compare/v2.6.1...v2.6.2) (2026-01-09)
 
 
