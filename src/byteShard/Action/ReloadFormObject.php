@@ -36,7 +36,7 @@ class ReloadFormObject extends Action
      */
     public function __construct(string $cell, string ...$formItems)
     {
-        $this->cell      = Cell::getContentClassName($cell, 'Form', __METHOD__);
+        $this->cell = Cell::getContentClassName($cell, 'Form', __METHOD__);
         foreach ($formItems as $formItem) {
             if ($formItem !== '') {
                 $this->formItems[$formItem] = $formItem;
@@ -53,6 +53,7 @@ class ReloadFormObject extends Action
         }
         $cell        = $cells[0];
         $cellContent = ContentClassFactory::cellContent($cell->getContentClass(), '', $cell);
+        $cell        = $cellContent->getCell();
 
         if (!($cellContent instanceof Form)) {
             return $action;
