@@ -1,3 +1,10 @@
+## [2.6.4](https://github.com/bespin-studios/byteshard-form/compare/v2.6.3...v2.6.4) (2026-03-10)
+
+
+### Bug Fixes
+
+* keep session open needed for tabbar in cell ([357b0b9](https://github.com/bespin-studios/byteshard-form/commit/357b0b9b48c3aed1d3ffab4965152eeb2a9a97ee))
+
 ## [2.6.3](https://github.com/bespin-studios/byteshard-form/compare/v2.6.2...v2.6.3) (2026-01-19)
 
 
