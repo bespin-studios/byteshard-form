@@ -157,7 +157,7 @@ abstract class Form extends CellContent implements FormInterface
      * @throws \Exception
      * @internal
      */
-    public function getCellContent(bool $resetNonce = true): ?ClientCell
+    public function getCellContent(bool $resetNonce = true, bool $keepSessionOpen = false): ?ClientCell
     {
         parent::getCellContent($resetNonce);
         $this->cell->clearContentObjectTypes();
@@ -192,7 +192,9 @@ abstract class Form extends CellContent implements FormInterface
         }
         $components = parent::getComponents();
         $this->evaluateContentEvents();
-        session_write_close();
+        if (!$keepSessionOpen) {
+            session_write_close();
+        }
         switch ($this->cell->getContentFormat()) {
             case 'JSON':
                 $components[] = new ContentComponent(
