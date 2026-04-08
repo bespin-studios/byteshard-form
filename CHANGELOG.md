@@ -1,3 +1,10 @@
+## [2.6.5](https://github.com/bespin-studios/byteshard-form/compare/v2.6.4...v2.6.5) (2026-04-08)
+
+
+### Bug Fixes
+
+* adjust form instantiation ([6eeb8f7](https://github.com/bespin-studios/byteshard-form/commit/6eeb8f79d75ac49b882bebf6e55202cb21607ef5))
+
 ## [2.6.4](https://github.com/bespin-studios/byteshard-form/compare/v2.6.3...v2.6.4) (2026-03-10)
 
 
