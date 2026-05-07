@@ -68,6 +68,7 @@ abstract class Form extends CellContent implements FormInterface
     private bool  $event_on_show_help             = false;
     private bool  $event_on_upload_file           = false;
     private bool  $event_on_blur                  = false;
+    private bool  $event_on_enter                 = false;
     private bool  $eventOnUnrestrictedButtonClick = false;
     private bool  $has_dependency_validation      = false;
     private bool  $use_single_file_mode           = false;
