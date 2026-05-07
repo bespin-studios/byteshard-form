@@ -1,3 +1,52 @@
+## [2.6.5](https://github.com/bespin-studios/byteshard-form/compare/v2.6.4...v2.6.5) (2026-04-08)
+
+
+### Bug Fixes
+
+* adjust form instantiation ([6eeb8f7](https://github.com/bespin-studios/byteshard-form/commit/6eeb8f79d75ac49b882bebf6e55202cb21607ef5))
+
+## [2.6.4](https://github.com/bespin-studios/byteshard-form/compare/v2.6.3...v2.6.4) (2026-03-10)
+
+
+### Bug Fixes
+
+* keep session open needed for tabbar in cell ([357b0b9](https://github.com/bespin-studios/byteshard-form/commit/357b0b9b48c3aed1d3ffab4965152eeb2a9a97ee))
+
+## [2.6.3](https://github.com/bespin-studios/byteshard-form/compare/v2.6.2...v2.6.3) (2026-01-19)
+
+
+### Bug Fixes
+
+* use dynamic cell for dynamic cell content ([4ff1c19](https://github.com/bespin-studios/byteshard-form/commit/4ff1c19e68ae4ed2167c8b426fd7fb7812d5e824))
+
+## [2.6.2](https://github.com/bespin-studios/byteshard-form/compare/v2.6.1...v2.6.2) (2026-01-09)
+
+
+### Bug Fixes
+
+* modifyFormObject not able to modify multiple items at once ([12b1779](https://github.com/bespin-studios/byteshard-form/commit/12b1779dc200dc9784b375c6e4fc5ffcd0de21ff))
+
+## [2.6.1](https://github.com/bespin-studios/byteshard-form/compare/v2.6.0...v2.6.1) (2026-01-09)
+
+
+### Bug Fixes
+
+* saveFormData was not working anymore after the refactoring of actions ([7041301](https://github.com/bespin-studios/byteshard-form/commit/704130179e3ec1898a39b635052cfeb4a04ad547))
+
+# [2.6.0](https://github.com/bespin-studios/byteshard-form/compare/v2.5.1...v2.6.0) (2026-01-08)
+
+
+### Features
+
+* implement new action layout ([52fdd03](https://github.com/bespin-studios/byteshard-form/commit/52fdd0398e0ef7ed18633ff20dc15052f5a06c0c))
+
+## [2.5.1](https://github.com/bespin-studios/byteshard-form/compare/v2.5.0...v2.5.1) (2025-07-30)
+
+
+### Bug Fixes
+
+* setRequired and unsetRequired actions were not working correctly ([397b47e](https://github.com/bespin-studios/byteshard-form/commit/397b47e4b8cd59c3ba3e9e27b81b27bd33f48b51))
+
 # [2.5.0](https://github.com/bespin-studios/byteshard-form/compare/v2.4.0...v2.5.0) (2025-07-19)
 
 

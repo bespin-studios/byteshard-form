@@ -59,7 +59,7 @@ class AddControl extends Action
         $cells = $this->getCells([$this->cell]);
         foreach ($cells as $cell) {
             $className = $cell->getContentClass();
-            $form      = new $className($cell);
+            $form      = new $className($cell, ''); // Second parameter is the context
             if ($form instanceof Form) {
                 $action['LCell'][$cell->containerId()][$cell->cellId()]['addItem'] = [
                     'items'    => json_decode($form->getControlsForAction(...$this->formControls)),
