@@ -536,6 +536,9 @@ abstract class Form extends CellContent implements FormInterface
             if ($this->event_on_button_click === true) {
                 $result[] = new ClientCellEvent('onButtonClick', 'doOnButtonClick');
             }
+            if ($this->event_on_enter === true) {
+                $result[] = new ClientCellEvent('onEnter', 'doOnEnter');
+            }
             if ($this->event_on_change === true) {
                 $result[] = new ClientCellEvent('onChange', 'doOnChange');
             }
