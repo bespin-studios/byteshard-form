@@ -44,9 +44,10 @@ abstract class Form extends CellContent implements FormInterface
     private array $formObjects          = [];
     private array $formObjectParameters = [];
 
-    private ?FormSettingsInterface $formSettings = null;
-    private array     $eventArray   = [];
-    private string    $query        = '';
+    private ?FormSettingsInterface $formSettings                        = null;
+    private bool                   $useSettingsDefinedInByteShardConfig = true;
+    private array                  $eventArray                          = [];
+    private string                 $query                               = '';
 
 
     private ?object $data_binding;
@@ -67,6 +68,7 @@ abstract class Form extends CellContent implements FormInterface
     private bool  $event_on_show_help             = false;
     private bool  $event_on_upload_file           = false;
     private bool  $event_on_blur                  = false;
+    private bool  $event_on_enter                 = false;
     private bool  $eventOnUnrestrictedButtonClick = false;
     private bool  $has_dependency_validation      = false;
     private bool  $use_single_file_mode           = false;
@@ -90,6 +92,16 @@ abstract class Form extends CellContent implements FormInterface
     private array  $objectProperties     = [];
     private array  $selectedComboOptions = [];
     private array  $asynchronousControls = [];
+
+    /**
+     * @return $this
+     * @API
+     */
+    public function dontUseGlobalFormSettings(): self
+    {
+        $this->useSettingsDefinedInByteShardConfig = false;
+        return $this;
+    }
 
     /**
      * @return void
@@ -278,6 +290,13 @@ abstract class Form extends CellContent implements FormInterface
 
     public function addFormSettings(FormSettingsInterface $formSettings): static
     {
+        //TODO: replace addFormSettings in interface with setFormSettings and update all places in the framework where this is called. Then enable the deprecation warning
+        //trigger_error('addFormSettings has been replaced with setFormSettings');
+        return $this->setFormSettings($formSettings);
+    }
+
+    public function setFormSettings(?FormSettingsInterface $formSettings): static
+    {
         $this->formSettings = $formSettings;
         return $this;
     }
@@ -301,7 +320,7 @@ abstract class Form extends CellContent implements FormInterface
     {
         if (!empty($this->formObjects)) {
             $randomIdArray     = [];
-            $localeToken = Locale::getScopeLocaleTokenBasedOnNamespace($this).'.Form.';
+            $localeToken       = Locale::getScopeLocaleTokenBasedOnNamespace($this).'.Form.';
             $defaultInputWidth = $this->formSettings?->getInputWidth();
             foreach ($this->formObjects as $formObject) {
                 $formObjectId = $formObject->getFormObjectId();
@@ -517,6 +536,9 @@ abstract class Form extends CellContent implements FormInterface
             if ($this->event_on_button_click === true) {
                 $result[] = new ClientCellEvent('onButtonClick', 'doOnButtonClick');
             }
+            if ($this->event_on_enter === true) {
+                $result[] = new ClientCellEvent('onEnter', 'doOnEnter');
+            }
             if ($this->event_on_change === true) {
                 $result[] = new ClientCellEvent('onChange', 'doOnChange');
             }
@@ -693,7 +715,7 @@ abstract class Form extends CellContent implements FormInterface
         $xmlElement = new SimpleXMLElement('<?xml version="1.0" encoding="'.$this->getOutputCharset().'" ?><items/>');
         if ($this->formSettings !== null) {
             $this->formSettings->getXMLElement($xmlElement, false);
-        } else {
+        } else if ($this->useSettingsDefinedInByteShardConfig === true) {
             global $env;
             $settings = $env->getFormSettings();
             if ($settings instanceof Form\Settings) {
