@@ -6,15 +6,17 @@
 
 namespace byteShard;
 
+use byteShard\Cell\Event\OnPoll;
 use byteShard\Enum\ContentFormat;
 use byteShard\Enum\ContentType;
+use byteShard\Event\OnPollInterface;
 use byteShard\Form\Control;
 use byteShard\Form\FormInterface;
 use byteShard\Form\FormSettingsInterface;
-use byteShard\Form\Settings;
 use byteShard\Internal\CellContent;
 use byteShard\Internal\ClientData\ProcessedClientData;
 use byteShard\Internal\ClientData\ProcessedClientDataInterface;
+use byteShard\Internal\Event\ImplicitEventInterface;
 use byteShard\Internal\Form\CollectionInterface;
 use byteShard\Internal\Form\DateValueInterface;
 use byteShard\Internal\Form\FormObject;
@@ -203,7 +205,6 @@ abstract class Form extends CellContent implements FormInterface
                 break;
         }
         $components = parent::getComponents();
-        $this->evaluateContentEvents();
         if (!$keepSessionOpen) {
             session_write_close();
         }
@@ -422,7 +423,6 @@ abstract class Form extends CellContent implements FormInterface
     {
         $this->addFormObject(...$formControls);
         $this->evaluate($this->getNonce());
-        $this->evaluateContentEvents();
         return $this->getJSON();
     }
 
@@ -526,6 +526,7 @@ abstract class Form extends CellContent implements FormInterface
     private function getCellEvents(): array
     {
         $cellEvents = $this->getParentEventsForClient();
+        $cellEvents = $this->addImplicitEvents($cellEvents);
         $result     = [];
         foreach ($cellEvents as $eventName => $events) {
             foreach ($events as $handler) {
@@ -575,22 +576,28 @@ abstract class Form extends CellContent implements FormInterface
         return $result;
     }
 
-    private function evaluateContentEvents(): void
+    private function addImplicitEvents(array $events): array
     {
-        //TODO: check if this is needed in fact. OnPoll should work different these days
-        /*foreach ($this->getEvents() as $event) {
-            // only one poll action per cell is currently allowed
-            if ($this->event_on_poll === false && $event instanceof Form\Event\OnPoll) {
-                $actions = $event->getActionArray();
-                foreach ($actions as $action) {
-                    if ($action instanceof Action\PollMethod) {
-                        $this->event_on_poll = true;
-                        $this->pollId        = $action->getId();
-                        break;
-                    }
+        $interfaces = array_flip(class_implements($this));
+        // remove events which have already been declared explicitly
+        foreach ($this->getEvents() as $event) {
+            if ($event instanceof ImplicitEventInterface) {
+                $interface = $event->getImplicitInterfaceClass();
+                if (array_key_exists($interface, $interfaces)) {
+                    unset($interfaces[$interface]);
                 }
             }
-        }*/
+        }
+        foreach ($interfaces as $interface) {
+            switch ($interface) {
+                case OnPollInterface::class:
+                    $onPoll       = new OnPoll();
+                    $pollEvent    = $onPoll->getClientArray($this->cell->getNonce());
+                    $this->pollId = $pollEvent['onPoll'];
+                    break;
+            }
+        }
+        return $events;
     }
 
     private function getPreParameters(string $nonce): array
