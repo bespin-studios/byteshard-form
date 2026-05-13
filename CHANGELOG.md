@@ -1,3 +1,17 @@
+# [2.7.0](https://github.com/bespin-studios/byteshard-form/compare/v2.6.5...v2.7.0) (2026-05-13)
+
+
+### Bug Fixes
+
+* onPoll event is now added again ([6445d4b](https://github.com/bespin-studios/byteshard-form/commit/6445d4b1c089a3c47a2cbd71f684bdfaef390853))
+
+
+### Features
+
+* add flag to ignore global form settings ([74746b7](https://github.com/bespin-studios/byteshard-form/commit/74746b7ec9859d53656fda0eda77acd0a25579ed))
+* add onEnter event to form objects ([59c433d](https://github.com/bespin-studios/byteshard-form/commit/59c433dd1b63a960f3580299ec44df6298ed1b85))
+* add onEnter event to form objects ([abe119e](https://github.com/bespin-studios/byteshard-form/commit/abe119e7c6a3da5e6eac7e0bcbffef9dd22cb899))
+
 ## [2.6.5](https://github.com/bespin-studios/byteshard-form/compare/v2.6.4...v2.6.5) (2026-04-08)
 
 
