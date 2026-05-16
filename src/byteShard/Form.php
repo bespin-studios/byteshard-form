@@ -235,7 +235,8 @@ abstract class Form extends CellContent implements FormInterface
                 nonce                  : $nonce,
                 cellHeader             : $this->getCellHeader(),
                 pollId                 : $this->pollId,
-                hasAsynchronousElements: !empty($this->asynchronousControls)
+                hasAsynchronousElements: !empty($this->asynchronousControls),
+                context                : $this->getContext()
             ),
             ...$components,
         );
