@@ -1,3 +1,10 @@
+## [2.8.1](https://github.com/bespin-studios/byteshard-form/compare/v2.8.0...v2.8.1) (2026-05-16)
+
+
+### Bug Fixes
+
+* unencrypted context sent to client will result in exceptions ([8398b55](https://github.com/bespin-studios/byteshard-form/commit/8398b5547759bac35d45534118086a0273553b1f))
+
 # [2.8.0](https://github.com/bespin-studios/byteshard-form/compare/v2.7.0...v2.8.0) (2026-05-16)
 
 
