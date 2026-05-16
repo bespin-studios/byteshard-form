@@ -230,13 +230,15 @@ abstract class Form extends CellContent implements FormInterface
                 );
                 break;
         }
+        $context = $this->getContext();
+        $encryptedContext = empty($context) ? null : Session::encrypt($context);
         return new ClientCell(
             new ClientCellProperties(
                 nonce                  : $nonce,
                 cellHeader             : $this->getCellHeader(),
                 pollId                 : $this->pollId,
                 hasAsynchronousElements: !empty($this->asynchronousControls),
-                context                : $this->getContext()
+                context                : $encryptedContext
             ),
             ...$components,
         );
