@@ -1,3 +1,10 @@
+# [2.8.0](https://github.com/bespin-studios/byteshard-form/compare/v2.7.0...v2.8.0) (2026-05-16)
+
+
+### Features
+
+* pass context to client ([d6f5669](https://github.com/bespin-studios/byteshard-form/commit/d6f566969941385f7849b6511cfd5f91e2401d30))
+
 # [2.7.0](https://github.com/bespin-studios/byteshard-form/compare/v2.6.5...v2.7.0) (2026-05-13)
 
 
