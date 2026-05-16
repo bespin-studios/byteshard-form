@@ -1,3 +1,10 @@
+## [2.8.2](https://github.com/bespin-studios/byteshard-form/compare/v2.8.1...v2.8.2) (2026-05-16)
+
+
+### Bug Fixes
+
+* context must be string ([c41f541](https://github.com/bespin-studios/byteshard-form/commit/c41f54106c78b129df94648bf1fa57a33215017a))
+
 ## [2.8.1](https://github.com/bespin-studios/byteshard-form/compare/v2.8.0...v2.8.1) (2026-05-16)
 
 
