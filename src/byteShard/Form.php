@@ -231,7 +231,7 @@ abstract class Form extends CellContent implements FormInterface
                 break;
         }
         $context = $this->getContext();
-        $encryptedContext = empty($context) ? null : Session::encrypt($context);
+        $encryptedContext = empty($context) ? '' : Session::encrypt($context);
         return new ClientCell(
             new ClientCellProperties(
                 nonce                  : $nonce,
