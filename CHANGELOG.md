@@ -1,3 +1,10 @@
+# [2.9.0](https://github.com/bespin-studios/byteshard-form/compare/v2.8.2...v2.9.0) (2026-05-17)
+
+
+### Features
+
+* new action to reloadFormContainer ([3453c37](https://github.com/bespin-studios/byteshard-form/commit/3453c3755d90f4b779816e3031ee8b520ff3ab9c))
+
 ## [2.8.2](https://github.com/bespin-studios/byteshard-form/compare/v2.8.1...v2.8.2) (2026-05-16)
 
 
