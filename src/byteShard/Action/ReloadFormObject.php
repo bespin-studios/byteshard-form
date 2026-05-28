@@ -25,6 +25,7 @@ class ReloadFormObject extends Action
 {
     private string $cell;
     private array  $formItems = [];
+    private array  $formItemParameters = [];
 
     /**
      * ReloadFormObject constructor.
@@ -42,6 +43,12 @@ class ReloadFormObject extends Action
                 $this->formItems[$formItem] = $formItem;
             }
         }
+    }
+
+    public function setFormItemParameters(string $formItem, array $parameters): self
+    {
+        $this->formItemParameters[$formItem] = $parameters;
+        return $this;
     }
 
     protected function runAction(): ActionResultInterface
@@ -91,6 +98,9 @@ class ReloadFormObject extends Action
 
             if ($encryptedName !== null) {
                 if ($control instanceof Form\Control\Combo && $control->getComboClass() !== '') {
+                    if (array_key_exists($control->getName(), $this->formItemParameters)) {
+                        $control->setComboParameters($this->formItemParameters[$control->getName()]);
+                    }
                     $reloadParams[$encryptedName] = $control->getUrl($cell);
                 } else {
                     $setDataParams[$encryptedName] = $this->getComboContent($control);
