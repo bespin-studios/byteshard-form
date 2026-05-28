@@ -1,3 +1,10 @@
+# [2.10.0](https://github.com/bespin-studios/byteshard-form/compare/v2.9.0...v2.10.0) (2026-05-28)
+
+
+### Features
+
+* ReloadFormObject can now inject parameters into combo reload ([28ad871](https://github.com/bespin-studios/byteshard-form/commit/28ad871db46b50c778028e3d143acfde21c78ecd))
+
 # [2.9.0](https://github.com/bespin-studios/byteshard-form/compare/v2.8.2...v2.9.0) (2026-05-17)
 
 
