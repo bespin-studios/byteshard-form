@@ -173,6 +173,9 @@ abstract class ModifyFormObject extends Action implements ClientExecutionInterfa
         if ($this instanceof UnsetRequiredFormObject) {
             return false;
         }
+        if ($this instanceof SetFormObjectClass || $this instanceof UnsetFormObjectClass) {
+            return $this->modificationValue;
+        }
         return $this->modification;
     }
 }
