@@ -1,3 +1,10 @@
+## [2.10.2](https://github.com/bespin-studios/byteshard-form/compare/v2.10.1...v2.10.2) (2026-08-20)
+
+
+### Bug Fixes
+
+* do not clone/use non-object properties ([816915e](https://github.com/bespin-studios/byteshard-form/commit/816915e75ccd4b3a6bde2ff418eff545a9d96b50))
+
 ## [2.10.1](https://github.com/bespin-studios/byteshard-form/compare/v2.10.0...v2.10.1) (2026-07-02)
 
 
