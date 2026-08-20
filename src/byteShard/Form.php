@@ -691,8 +691,10 @@ abstract class Form extends CellContent implements FormInterface
     {
         $objectProperties = [];
         foreach ($properties as $objectProperty) {
-            $objectProperties[$objectProperty->i] = clone $objectProperty;
-            unset($objectProperties[$objectProperty->i]->i);
+            if (is_object($objectProperty)) {
+                $objectProperties[$objectProperty->i] = clone $objectProperty;
+                unset($objectProperties[$objectProperty->i]->i);
+            }
         }
         if (extension_loaded('zlib') === true) {
             return Session::encrypt(gzcompress(json_encode($objectProperties), 9), Session::getTopLevelNonce());
